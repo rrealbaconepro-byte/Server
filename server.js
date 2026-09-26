@@ -1,32 +1,69 @@
+/*
+============================================================
+ PLAYROVIVAL SERVER
+ Node.js built-in modules ONLY
+============================================================
+
+ LAN ADDRESS:
+   192.168.178.69
+
+ PORT:
+   3040
+
+ LOCAL:
+   http://192.168.178.69:3040
+
+ TARGET WEBSITE:
+   https://playrovival.neocities.org
+
+ If HTTPS certificates exist:
+
+   https://192.168.178.69:3040
+
+ Certificate files:
+
+   cert/server.key
+   cert/server.crt
+
+============================================================
+*/
+
 "use strict";
 
 const http = require("http");
+const https = require("https");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
 
 /* =========================================================
-   AROVIVAL PUBLIC SERVER
-   Node.js built-in modules only
+   CONFIG
 ========================================================= */
 
+const SERVER_IP = "192.168.178.69";
 const HOST = "0.0.0.0";
-const PORT = Number(process.env.PORT) || 3040;
+const PORT = 3040;
 
-const WEBSITE = "https://arovival.neocities.org";
+const NEOCITIES_SITE =
+    "https://arovival.neocities.org";
 
-const DATA_DIR = path.join(__dirname, "playro_data");
+const DATA_DIR =
+    path.join(__dirname, "playro_data");
 
-const ACCOUNTS_FILE = path.join(DATA_DIR, "accounts.json");
-const SESSIONS_FILE = path.join(DATA_DIR, "sessions.json");
-const GAMES_FILE = path.join(DATA_DIR, "games.json");
-const CATALOG_FILE = path.join(DATA_DIR, "catalog.json");
+const CERT_DIR =
+    path.join(__dirname, "cert");
 
-const MAX_BODY = 2 * 1024 * 1024;
-const SESSION_TIME = 30 * 24 * 60 * 60 * 1000;
+const CERT_KEY =
+    path.join(CERT_DIR, "server.key");
 
-fs.mkdirSync(DATA_DIR, { recursive: true });
+const CERT_FILE =
+    path.join(CERT_DIR, "server.crt");
+
+const MAX_BODY_SIZE = 2 * 1024 * 1024;
+
+const SESSION_TIME =
+    1000 * 60 * 60 * 24 * 30;
 
 /* =========================================================
    LOGGING
@@ -39,48 +76,56 @@ function log(message) {
 }
 
 /* =========================================================
-   JSON DATABASE
+   DIRECTORIES
 ========================================================= */
 
-function readJSON(file, fallback) {
-    try {
-        if (!fs.existsSync(file)) {
-            fs.writeFileSync(
-                file,
-                JSON.stringify(fallback, null, 2)
-            );
-
-            return fallback;
-        }
-
-        const text = fs.readFileSync(file, "utf8");
-
-        if (!text.trim()) {
-            return fallback;
-        }
-
-        return JSON.parse(text);
-
-    } catch (error) {
-
-        console.error(
-            `Database read error: ${file}`,
-            error.message
-        );
-
-        return fallback;
-    }
+if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, {
+        recursive: true
+    });
 }
+
+if (!fs.existsSync(CERT_DIR)) {
+    fs.mkdirSync(CERT_DIR, {
+        recursive: true
+    });
+}
+
+/* =========================================================
+   FILE DATABASE
+========================================================= */
+
+const files = {
+    accounts:
+        path.join(DATA_DIR, "accounts.json"),
+
+    sessions:
+        path.join(DATA_DIR, "sessions.json"),
+
+    games:
+        path.join(DATA_DIR, "games.json"),
+
+    catalog:
+        path.join(DATA_DIR, "catalog.json"),
+
+    servers:
+        path.join(DATA_DIR, "servers.json")
+};
 
 function writeJSON(file, data) {
 
-    const temp = file + ".tmp";
+    const temp =
+        file + ".tmp";
 
     try {
 
         fs.writeFileSync(
             temp,
-            JSON.stringify(data, null, 2),
+            JSON.stringify(
+                data,
+                null,
+                2
+            ),
             "utf8"
         );
 
@@ -92,7 +137,7 @@ function writeJSON(file, data) {
     } catch (error) {
 
         console.error(
-            `Database write error: ${file}`,
+            "Database write error:",
             error.message
         );
 
@@ -104,6 +149,49 @@ function writeJSON(file, data) {
     }
 }
 
+function readJSON(file, fallback) {
+
+    try {
+
+        if (!fs.existsSync(file)) {
+
+            writeJSON(
+                file,
+                fallback
+            );
+
+            return fallback;
+        }
+
+        const text =
+            fs.readFileSync(
+                file,
+                "utf8"
+            );
+
+        if (!text.trim()) {
+
+            writeJSON(
+                file,
+                fallback
+            );
+
+            return fallback;
+        }
+
+        return JSON.parse(text);
+
+    } catch (error) {
+
+        console.error(
+            `Could not read ${file}:`,
+            error.message
+        );
+
+        return fallback;
+    }
+}
+
 /* =========================================================
    DATABASE
 ========================================================= */
@@ -112,42 +200,45 @@ const db = {
 
     accounts:
         readJSON(
-            ACCOUNTS_FILE,
+            files.accounts,
             []
         ),
 
     sessions:
         readJSON(
-            SESSIONS_FILE,
+            files.sessions,
             {}
         ),
 
     games:
         readJSON(
-            GAMES_FILE,
+            files.games,
             [
                 {
                     id: "welcome",
-                    name: "AroVival Welcome",
+                    name:
+                        "PlayRovival Welcome",
                     description:
-                        "Welcome to AroVival!",
-                    creator: "AroVival",
-                    creatorId: null,
+                        "Welcome to PlayRovival!",
+                    creator:
+                        "PlayRovival",
+                    players: 0,
                     maxPlayers: 20,
-                    createdAt: Date.now()
+                    createdAt:
+                        Date.now()
                 }
             ]
         ),
 
     catalog:
         readJSON(
-            CATALOG_FILE,
+            files.catalog,
             [
                 {
                     id: "starter",
                     name: "Starter Item",
                     description:
-                        "Free starter item",
+                        "PlayRovival starter item",
                     price: 0,
                     type: "item"
                 },
@@ -170,29 +261,40 @@ const db = {
                     type: "clothing"
                 }
             ]
+        ),
+
+    servers:
+        readJSON(
+            files.servers,
+            []
         )
 };
 
 function saveDatabase() {
 
     writeJSON(
-        ACCOUNTS_FILE,
+        files.accounts,
         db.accounts
     );
 
     writeJSON(
-        SESSIONS_FILE,
+        files.sessions,
         db.sessions
     );
 
     writeJSON(
-        GAMES_FILE,
+        files.games,
         db.games
     );
 
     writeJSON(
-        CATALOG_FILE,
+        files.catalog,
         db.catalog
+    );
+
+    writeJSON(
+        files.servers,
+        db.servers
     );
 }
 
@@ -200,7 +302,7 @@ function saveDatabase() {
    UTILITIES
 ========================================================= */
 
-function createID(prefix) {
+function id(prefix = "") {
 
     return (
         prefix +
@@ -210,10 +312,14 @@ function createID(prefix) {
     );
 }
 
-function cleanString(value, max) {
+function cleanString(
+    value,
+    max = 200
+) {
 
     if (
-        typeof value !== "string"
+        typeof value !==
+        "string"
     ) {
         return "";
     }
@@ -224,42 +330,13 @@ function cleanString(value, max) {
 }
 
 /* =========================================================
-   CORS
-========================================================= */
-
-function cors(res) {
-
-    res.setHeader(
-        "Access-Control-Allow-Origin",
-        WEBSITE
-    );
-
-    res.setHeader(
-        "Access-Control-Allow-Credentials",
-        "true"
-    );
-
-    res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
-    );
-
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, OPTIONS"
-    );
-}
-
-/* =========================================================
-   RESPONSE
+   HTTP RESPONSES
 ========================================================= */
 
 function json(res, status, data) {
 
     const body =
         JSON.stringify(data);
-
-    cors(res);
 
     res.writeHead(
         status,
@@ -270,12 +347,31 @@ function json(res, status, data) {
             "Content-Length":
                 Buffer.byteLength(body),
 
+            "Access-Control-Allow-Origin":
+                NEOCITIES_SITE,
+
+            "Access-Control-Allow-Credentials":
+                "true",
+
             "Cache-Control":
                 "no-store"
         }
     );
 
     res.end(body);
+}
+
+function redirect(res) {
+
+    res.writeHead(
+        302,
+        {
+            Location:
+                NEOCITIES_SITE
+        }
+    );
+
+    res.end();
 }
 
 /* =========================================================
@@ -298,12 +394,12 @@ function getBody(req) {
 
                     if (
                         Buffer.byteLength(body) >
-                        MAX_BODY
+                        MAX_BODY_SIZE
                     ) {
 
                         reject(
                             new Error(
-                                "Request body too large"
+                                "Request too large"
                             )
                         );
 
@@ -317,7 +413,9 @@ function getBody(req) {
                 () => {
 
                     if (!body) {
+
                         resolve({});
+
                         return;
                     }
 
@@ -347,76 +445,69 @@ function getBody(req) {
 }
 
 /* =========================================================
-   PASSWORD SECURITY
+   PASSWORDS
 ========================================================= */
 
-function makePassword(password) {
+function passwordHash(
+    password,
+    salt
+) {
+
+    return crypto
+        .pbkdf2Sync(
+            password,
+            salt,
+            120000,
+            64,
+            "sha512"
+        )
+        .toString("hex");
+}
+
+function createPassword(
+    password
+) {
 
     const salt =
         crypto
             .randomBytes(16)
             .toString("hex");
 
-    const hash =
-        crypto
-            .pbkdf2Sync(
-                password,
-                salt,
-                120000,
-                64,
-                "sha512"
-            )
-            .toString("hex");
-
     return {
         salt,
-        hash
+        hash:
+            passwordHash(
+                password,
+                salt
+            )
     };
 }
 
-function checkPassword(
+function verifyPassword(
     password,
     account
 ) {
 
     const hash =
-        crypto
-            .pbkdf2Sync(
-                password,
-                account.passwordSalt,
-                120000,
-                64,
-                "sha512"
-            )
-            .toString("hex");
+        passwordHash(
+            password,
+            account.passwordSalt
+        );
 
-    const a =
+    return crypto.timingSafeEqual(
         Buffer.from(
             hash,
             "hex"
-        );
-
-    const b =
+        ),
         Buffer.from(
             account.passwordHash,
             "hex"
-        );
-
-    if (
-        a.length !==
-        b.length
-    ) {
-        return false;
-    }
-
-    return crypto.timingSafeEqual(
-        a,
-        b
+        )
     );
 }
 
 /* =========================================================
-   AUTHENTICATION
+   AUTH
 ========================================================= */
 
 function getToken(req) {
@@ -434,6 +525,21 @@ function getToken(req) {
         return authorization
             .slice(7)
             .trim();
+    }
+
+    const cookies =
+        req.headers.cookie ||
+        "";
+
+    const match =
+        cookies.match(
+            /(?:^|;\s*)session=([^;]+)/
+        );
+
+    if (match) {
+        return decodeURIComponent(
+            match[1]
+        );
     }
 
     return "";
@@ -467,13 +573,11 @@ function getAccount(req) {
         return null;
     }
 
-    return (
-        db.accounts.find(
-            account =>
-                account.id ===
-                session.accountId
-        ) || null
-    );
+    return db.accounts.find(
+        account =>
+            account.id ===
+            session.accountId
+    ) || null;
 }
 
 function publicAccount(account) {
@@ -507,6 +611,13 @@ function publicAccount(account) {
 }
 
 /* =========================================================
+   ONLINE PLAYERS
+========================================================= */
+
+const onlinePlayers =
+    new Map();
+
+/* =========================================================
    API
 ========================================================= */
 
@@ -517,11 +628,12 @@ async function api(
 ) {
 
     /* -----------------------------------------------------
-       API INFO
+       API INFORMATION
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api"
+        pathname ===
+        "/api"
     ) {
 
         return json(
@@ -531,29 +643,37 @@ async function api(
                 success: true,
 
                 name:
-                    "AroVival API",
+                    "PlayRovival API",
 
                 version:
                     "1.0.0",
 
-                website:
-                    WEBSITE,
+                server:
+                    SERVER_IP,
 
                 port:
                     PORT,
 
+                website:
+                    NEOCITIES_SITE,
+
                 endpoints: [
+
                     "/api/signup",
                     "/api/login",
                     "/api/logout",
                     "/api/me",
+
                     "/api/catalog",
-                    "/api/inventory",
                     "/api/buy",
+                    "/api/inventory",
+
                     "/api/games",
                     "/api/games/create",
+
                     "/api/favorites",
-                    "/api/players"
+                    "/api/players",
+                    "/api/servers"
                 ]
             }
         );
@@ -564,7 +684,8 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/health"
+        pathname ===
+        "/health"
     ) {
 
         return json(
@@ -572,12 +693,28 @@ async function api(
             200,
             {
                 success: true,
-                status: "online",
-                server: "AroVival",
+
+                status:
+                    "online",
+
+                server:
+                    "PlayRovival",
+
+                address:
+                    SERVER_IP,
+
+                port:
+                    PORT,
+
+                website:
+                    NEOCITIES_SITE,
+
                 uptime:
                     process.uptime(),
+
                 time:
-                    new Date().toISOString()
+                    new Date()
+                        .toISOString()
             }
         );
     }
@@ -587,7 +724,8 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/stats"
+        pathname ===
+        "/stats"
     ) {
 
         return json(
@@ -601,6 +739,9 @@ async function api(
 
                 games:
                     db.games.length,
+
+                onlinePlayers:
+                    onlinePlayers.size,
 
                 uptime:
                     process.uptime(),
@@ -616,11 +757,13 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/signup"
+        pathname ===
+        "/api/signup"
     ) {
 
         if (
-            req.method !== "POST"
+            req.method !==
+            "POST"
         ) {
 
             return json(
@@ -660,16 +803,16 @@ async function api(
                 32
             );
 
+        const password =
+            String(
+                body.password || ""
+            );
+
         const displayName =
             cleanString(
                 body.displayName ||
                 username,
                 40
-            );
-
-        const password =
-            String(
-                body.password || ""
             );
 
         if (
@@ -683,7 +826,7 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Username may only contain letters, numbers and underscores."
+                        "Invalid username"
                 }
             );
         }
@@ -698,20 +841,19 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Password must contain at least 6 characters."
+                        "Password must contain at least 6 characters"
                 }
             );
         }
 
-        const exists =
+        if (
             db.accounts.some(
                 account =>
                     account.username
                         .toLowerCase() ===
                     username.toLowerCase()
-            );
-
-        if (exists) {
+            )
+        ) {
 
             return json(
                 res,
@@ -719,20 +861,20 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Username already exists."
+                        "Username already exists"
                 }
             );
         }
 
         const passwordData =
-            makePassword(
+            createPassword(
                 password
             );
 
         const account = {
 
             id:
-                createID("user_"),
+                id("user_"),
 
             username,
 
@@ -767,7 +909,7 @@ async function api(
         );
 
         const token =
-            createID("session_");
+            id("session_");
 
         db.sessions[token] = {
 
@@ -793,9 +935,7 @@ async function api(
             201,
             {
                 success: true,
-
                 token,
-
                 account:
                     publicAccount(
                         account
@@ -809,11 +949,13 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/login"
+        pathname ===
+        "/api/login"
     ) {
 
         if (
-            req.method !== "POST"
+            req.method !==
+            "POST"
         ) {
 
             return json(
@@ -868,7 +1010,7 @@ async function api(
 
         if (
             !account ||
-            !checkPassword(
+            !verifyPassword(
                 password,
                 account
             )
@@ -884,13 +1026,13 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Invalid username or password."
+                        "Invalid username or password"
                 }
             );
         }
 
         const token =
-            createID("session_");
+            id("session_");
 
         db.sessions[token] = {
 
@@ -932,11 +1074,13 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/logout"
+        pathname ===
+        "/api/logout"
     ) {
 
         if (
-            req.method !== "POST"
+            req.method !==
+            "POST"
         ) {
 
             return json(
@@ -953,7 +1097,9 @@ async function api(
 
         if (token) {
 
-            delete db.sessions[token];
+            delete db.sessions[
+                token
+            ];
 
             saveDatabase();
         }
@@ -972,7 +1118,8 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/me"
+        pathname ===
+        "/api/me"
     ) {
 
         const account =
@@ -986,7 +1133,7 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Not logged in."
+                        "Not logged in"
                 }
             );
         }
@@ -1010,7 +1157,8 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/catalog"
+        pathname ===
+        "/api/catalog"
     ) {
 
         return json(
@@ -1018,6 +1166,7 @@ async function api(
             200,
             {
                 success: true,
+
                 items:
                     db.catalog
             }
@@ -1029,7 +1178,8 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/inventory"
+        pathname ===
+        "/api/inventory"
     ) {
 
         const account =
@@ -1043,7 +1193,7 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Login required."
+                        "Login required"
                 }
             );
         }
@@ -1071,151 +1221,12 @@ async function api(
     }
 
     /* -----------------------------------------------------
-       BUY
-    ----------------------------------------------------- */
-
-    if (
-        pathname === "/api/buy"
-    ) {
-
-        if (
-            req.method !== "POST"
-        ) {
-
-            return json(
-                res,
-                405,
-                {
-                    success: false,
-                    error:
-                        "POST required"
-                }
-            );
-        }
-
-        const account =
-            getAccount(req);
-
-        if (!account) {
-
-            return json(
-                res,
-                401,
-                {
-                    success: false,
-                    error:
-                        "Login required."
-                }
-            );
-        }
-
-        let body;
-
-        try {
-
-            body =
-                await getBody(req);
-
-        } catch (error) {
-
-            return json(
-                res,
-                400,
-                {
-                    success: false,
-                    error:
-                        error.message
-                }
-            );
-        }
-
-        const item =
-            db.catalog.find(
-                x =>
-                    x.id ===
-                    body.itemId
-            );
-
-        if (!item) {
-
-            return json(
-                res,
-                404,
-                {
-                    success: false,
-                    error:
-                        "Item not found."
-                }
-            );
-        }
-
-        if (
-            account.inventory.includes(
-                item.id
-            )
-        ) {
-
-            return json(
-                res,
-                409,
-                {
-                    success: false,
-                    error:
-                        "You already own this item."
-                }
-            );
-        }
-
-        if (
-            account.coins <
-            item.price
-        ) {
-
-            return json(
-                res,
-                400,
-                {
-                    success: false,
-                    error:
-                        "Not enough coins."
-                }
-            );
-        }
-
-        account.coins -= item.price;
-
-        account.inventory.push(
-            item.id
-        );
-
-        saveDatabase();
-
-        log(
-            `PURCHASE: ${account.username} bought ${item.id}`
-        );
-
-        return json(
-            res,
-            200,
-            {
-                success: true,
-
-                account:
-                    publicAccount(
-                        account
-                    ),
-
-                item
-            }
-        );
-    }
-
-    /* -----------------------------------------------------
        GAMES
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/games"
+        pathname ===
+        "/api/games"
     ) {
 
         return json(
@@ -1228,7 +1239,17 @@ async function api(
                     db.games.map(
                         game => ({
                             ...game,
-                            players: 0
+
+                            players:
+                                [
+                                    ...onlinePlayers.values()
+                                ]
+                                .filter(
+                                    player =>
+                                        player.gameId ===
+                                        game.id
+                                )
+                                .length
                         })
                     )
             }
@@ -1240,23 +1261,9 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/games/create"
+        pathname ===
+        "/api/games/create"
     ) {
-
-        if (
-            req.method !== "POST"
-        ) {
-
-            return json(
-                res,
-                405,
-                {
-                    success: false,
-                    error:
-                        "POST required"
-                }
-            );
-        }
 
         const account =
             getAccount(req);
@@ -1269,7 +1276,7 @@ async function api(
                 {
                     success: false,
                     error:
-                        "Login required."
+                        "Login required"
                 }
             );
         }
@@ -1294,45 +1301,31 @@ async function api(
             );
         }
 
-        const name =
-            cleanString(
-                body.name,
-                80
-            );
-
-        const description =
-            cleanString(
-                body.description,
-                500
-            );
-
-        if (!name) {
-
-            return json(
-                res,
-                400,
-                {
-                    success: false,
-                    error:
-                        "Game name required."
-                }
-            );
-        }
-
         const game = {
 
             id:
-                createID("game_"),
+                id("game_"),
 
-            name,
+            name:
+                cleanString(
+                    body.name,
+                    80
+                ),
 
-            description,
+            description:
+                cleanString(
+                    body.description,
+                    500
+                ),
 
             creator:
                 account.username,
 
             creatorId:
                 account.id,
+
+            players:
+                0,
 
             maxPlayers:
                 20,
@@ -1341,12 +1334,27 @@ async function api(
                 Date.now()
         };
 
-        db.games.push(game);
+        if (!game.name) {
+
+            return json(
+                res,
+                400,
+                {
+                    success: false,
+                    error:
+                        "Game name required"
+                }
+            );
+        }
+
+        db.games.push(
+            game
+        );
 
         saveDatabase();
 
         log(
-            `GAME CREATED: ${name}`
+            `GAME CREATED: ${game.name}`
         );
 
         return json(
@@ -1364,7 +1372,8 @@ async function api(
     ----------------------------------------------------- */
 
     if (
-        pathname === "/api/players"
+        pathname ===
+        "/api/players"
     ) {
 
         return json(
@@ -1372,7 +1381,24 @@ async function api(
             200,
             {
                 success: true,
-                players: []
+
+                players:
+                    [
+                        ...onlinePlayers.values()
+                    ]
+                    .map(
+                        player => ({
+                            id:
+                                player.id,
+
+                            username:
+                                player.username,
+
+                            gameId:
+                                player.gameId ||
+                                null
+                        })
+                    )
             }
         );
     }
@@ -1383,25 +1409,152 @@ async function api(
         {
             success: false,
             error:
-                "API endpoint not found."
+                "API endpoint not found"
         }
     );
+}
+
+/* =========================================================
+   LOCAL WEBSITE
+========================================================= */
+
+function localWebsite(
+    req,
+    res
+) {
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>PlayRovival Server</title>
+
+<style>
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #111;
+    color: white;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    text-align: center;
+}
+
+.box {
+    max-width: 700px;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 42px;
+}
+
+.status {
+    color: #55ff88;
+    font-weight: bold;
+}
+
+button {
+    padding: 14px 25px;
+    border: 0;
+    border-radius: 8px;
+
+    background: #ff8a00;
+    color: white;
+
+    font-size: 16px;
+    cursor: pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>PlayRovival</h1>
+
+<p class="status">
+SERVER ONLINE
+</p>
+
+<p>
+Local server:
+</p>
+
+<p>
+<strong>
+192.168.178.69:3040
+</strong>
+</p>
+
+<p>
+This server is running locally.
+</p>
+
+<p>
+The main PlayRovival website is hosted on Neocities.
+</p>
+
+<button onclick="
+window.location.href =
+'https://playrovival.neocities.org'
+">
+Open PlayRovival
+</button>
+
+</div>
+
+</body>
+</html>
+`;
+
+    res.writeHead(
+        200,
+        {
+            "Content-Type":
+                "text/html; charset=utf-8",
+
+            "Cache-Control":
+                "no-store"
+        }
+    );
+
+    res.end(html);
 }
 
 /* =========================================================
    REQUEST HANDLER
 ========================================================= */
 
-async function requestHandler(req, res) {
+async function requestHandler(
+    req,
+    res
+) {
 
-    const start = Date.now();
+    const start =
+        Date.now();
 
     try {
 
         const parsed =
             new URL(
                 req.url,
-                `http://${req.headers.host || "localhost"}`
+                `http://${SERVER_IP}:${PORT}`
             );
 
         const pathname =
@@ -1411,16 +1564,30 @@ async function requestHandler(req, res) {
             `${req.method} ${pathname} FROM ${req.socket.remoteAddress}`
         );
 
-        /* CORS preflight */
+        /* -------------------------------------------------
+           CORS
+        ------------------------------------------------- */
 
         if (
-            req.method === "OPTIONS"
+            req.method ===
+            "OPTIONS"
         ) {
 
-            cors(res);
-
             res.writeHead(
-                204
+                204,
+                {
+                    "Access-Control-Allow-Origin":
+                        NEOCITIES_SITE,
+
+                    "Access-Control-Allow-Methods":
+                        "GET,POST,PUT,DELETE,OPTIONS",
+
+                    "Access-Control-Allow-Headers":
+                        "Content-Type, Authorization",
+
+                    "Access-Control-Allow-Credentials":
+                        "true"
+                }
             );
 
             res.end();
@@ -1428,13 +1595,20 @@ async function requestHandler(req, res) {
             return;
         }
 
-        /* API */
+        /* -------------------------------------------------
+           API
+        ------------------------------------------------- */
 
         if (
-            pathname === "/api" ||
-            pathname.startsWith("/api/") ||
-            pathname === "/health" ||
-            pathname === "/stats"
+            pathname.startsWith(
+                "/api/"
+            ) ||
+            pathname ===
+            "/api" ||
+            pathname ===
+            "/health" ||
+            pathname ===
+            "/stats"
         ) {
 
             await api(
@@ -1446,11 +1620,8 @@ async function requestHandler(req, res) {
         } else {
 
             /*
-             * The API server is separate from
-             * the public Neocities frontend.
-             *
-             * Visiting the server root redirects
-             * to AroVival.
+             * Any normal browser visit to the
+             * local server goes to Neocities.
              */
 
             redirect(res);
@@ -1462,9 +1633,9 @@ async function requestHandler(req, res) {
 
     } catch (error) {
 
-        errorLog(
-            "REQUEST ERROR",
-            error
+        console.error(
+            "REQUEST ERROR:",
+            error.stack || error
         );
 
         if (!res.headersSent) {
@@ -1475,7 +1646,7 @@ async function requestHandler(req, res) {
                 {
                     success: false,
                     error:
-                        "Internal server error."
+                        "Internal server error"
                 }
             );
         }
@@ -1483,25 +1654,94 @@ async function requestHandler(req, res) {
 }
 
 /* =========================================================
-   SERVER
+   HTTP / HTTPS MODE
 ========================================================= */
 
-const server =
-    http.createServer(
-        requestHandler
+let server;
+let secure = false;
+
+const certificatesExist =
+    fs.existsSync(CERT_KEY) &&
+    fs.existsSync(CERT_FILE);
+
+if (certificatesExist) {
+
+    try {
+
+        const key =
+            fs.readFileSync(
+                CERT_KEY
+            );
+
+        const cert =
+            fs.readFileSync(
+                CERT_FILE
+            );
+
+        server =
+            https.createServer(
+                {
+                    key,
+                    cert
+                },
+                requestHandler
+            );
+
+        secure = true;
+
+        log(
+            "HTTPS certificate loaded."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "HTTPS certificate error:",
+            error.message
+        );
+
+        log(
+            "Falling back to HTTP."
+        );
+
+        server =
+            http.createServer(
+                requestHandler
+            );
+    }
+
+} else {
+
+    server =
+        http.createServer(
+            requestHandler
+        );
+
+    log(
+        "No HTTPS certificate found."
     );
+
+    log(
+        "Running in HTTP LAN mode."
+    );
+}
+
+/* =========================================================
+   START SERVER
+========================================================= */
 
 server.on(
     "error",
     error => {
 
-        errorLog(
-            "SERVER ERROR",
+        console.error(
+            "SERVER ERROR:",
             error
         );
 
         if (
-            error.code === "EADDRINUSE"
+            error.code ===
+            "EADDRINUSE"
         ) {
 
             console.error(
@@ -1511,82 +1751,73 @@ server.on(
     }
 );
 
-/* =========================================================
-   START
-========================================================= */
-
 server.listen(
     PORT,
     HOST,
     () => {
 
+        const protocol =
+            secure
+                ? "https"
+                : "http";
+
         console.log("");
         console.log(
             "=============================================="
         );
+
         console.log(
-            "             AROVIVAL SERVER"
+            "        PLAYROVIVAL SERVER ONLINE"
         );
+
         console.log(
             "=============================================="
         );
 
+        console.log("");
+
         console.log(
-            `Listening: ${HOST}:${PORT}`
+            `SERVER: ${protocol}://${SERVER_IP}:${PORT}`
         );
 
         console.log(
-            `Port: ${PORT}`
-        );
-
-        console.log(
-            `Website: ${WEBSITE}`
+            `LISTEN: ${HOST}:${PORT}`
         );
 
         console.log("");
 
         console.log(
-            "API:"
-        );
-
-        console.log(
-            "/api"
-        );
-
-        console.log(
-            "/api/signup"
-        );
-
-        console.log(
-            "/api/login"
-        );
-
-        console.log(
-            "/api/me"
-        );
-
-        console.log(
-            "/api/games"
+            `WEBSITE: ${NEOCITIES_SITE}`
         );
 
         console.log("");
 
         console.log(
-            "Health:"
+            `API: ${protocol}://${SERVER_IP}:${PORT}/api`
         );
 
         console.log(
-            "/health"
+            `HEALTH: ${protocol}://${SERVER_IP}:${PORT}/health`
         );
 
         console.log(
-            "/stats"
+            `STATS: ${protocol}://${SERVER_IP}:${PORT}/stats`
         );
 
         console.log("");
 
         console.log(
-            "AROVIVAL SERVER READY."
+            "Browser requests to the local site redirect to:"
+        );
+
+        console.log(
+            NEOCITIES_SITE
+        );
+
+        console.log("");
+
+        console.log(
+            "SERVER READY."
         );
 
         console.log(
@@ -1605,9 +1836,9 @@ process.on(
     "uncaughtException",
     error => {
 
-        errorLog(
-            "UNCAUGHT EXCEPTION",
-            error
+        console.error(
+            "UNCAUGHT EXCEPTION:",
+            error.stack || error
         );
     }
 );
@@ -1616,8 +1847,8 @@ process.on(
     "unhandledRejection",
     error => {
 
-        errorLog(
-            "UNHANDLED REJECTION",
+        console.error(
+            "UNHANDLED REJECTION:",
             error
         );
     }
@@ -1627,10 +1858,12 @@ process.on(
    SHUTDOWN
 ========================================================= */
 
-function shutdown(signal) {
+function shutdown(
+    signal
+) {
 
-    log(
-        `${signal} received. Saving database...`
+    console.log(
+        `Received ${signal}. Saving database...`
     );
 
     saveDatabase();
@@ -1638,8 +1871,8 @@ function shutdown(signal) {
     server.close(
         () => {
 
-            log(
-                "AroVival server stopped."
+            console.log(
+                "PlayRovival server stopped."
             );
 
             process.exit(0);
@@ -1661,15 +1894,3 @@ process.on(
     "SIGTERM",
     () => shutdown("SIGTERM")
 );
-'''
-
-path = Path("/mnt/data/server.js")
-path.write_text(code, encoding="utf-8")
-print(f"Created {path} ({len(code.splitlines())} lines)")
-print("Upload this as server.js in the GitHub repository.")
-print("Important: the code is public-host ready, but permanent account storage on a free host may require a persistent database/storage service.")
-print("The server listens on 0.0.0.0 and uses process.env.PORT.")
-print("Neocities CORS origin is https://arovival.neocities.org.")
-print("Do not put passwords, API keys, or secrets in this file.")
-print("Download:", path)
-"]
