@@ -1,3 +1,4 @@
+```js
 // ============================================================
 // ROVIVAL SERVER
 // Node.js built-in modules only
@@ -15,7 +16,8 @@ const path = require("path");
 const HOST = "0.0.0.0";
 const PORT = Number(process.env.PORT) || 3040;
 
-const WEBSITE = "https://arovival.neocities.org";
+// Website origin used for CORS/API requests
+const WEBSITE = "https://rovival.onrender.com";
 
 const DATA_DIR = path.join(__dirname, "playro_data");
 
@@ -531,6 +533,151 @@ function sendText(
 }
 
 // ============================================================
+// STATIC WEBSITE FILE SERVER
+// ============================================================
+
+const MIME_TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".txt": "text/plain; charset=utf-8",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+    ".ttf": "font/ttf"
+};
+
+function serveWebsiteFile(req, res, pathname) {
+
+    let decodedPath;
+
+    try {
+
+        decodedPath =
+            decodeURIComponent(pathname);
+
+    } catch {
+
+        sendText(
+            res,
+            req,
+            400,
+            "Bad Request"
+        );
+
+        return true;
+    }
+
+    if (decodedPath === "/") {
+        decodedPath = "/index.html";
+    }
+
+    const relativePath =
+        decodedPath.replace(/^\/+/, "");
+
+    const rootPath =
+        path.resolve(__dirname);
+
+    const filePath =
+        path.resolve(
+            __dirname,
+            relativePath
+        );
+
+    // Prevent ../ path traversal
+    if (
+        filePath !== rootPath &&
+        !filePath.startsWith(
+            rootPath + path.sep
+        )
+    ) {
+
+        sendText(
+            res,
+            req,
+            403,
+            "Forbidden"
+        );
+
+        return true;
+    }
+
+    if (!fs.existsSync(filePath)) {
+        return false;
+    }
+
+    let stat;
+
+    try {
+
+        stat =
+            fs.statSync(filePath);
+
+    } catch {
+
+        return false;
+    }
+
+    if (!stat.isFile()) {
+        return false;
+    }
+
+    const extension =
+        path.extname(filePath)
+            .toLowerCase();
+
+    const contentType =
+        MIME_TYPES[extension] ||
+        "application/octet-stream";
+
+    try {
+
+        const data =
+            fs.readFileSync(filePath);
+
+        res.writeHead(
+            200,
+            {
+                "Content-Type":
+                    contentType,
+
+                "Cache-Control":
+                    "no-cache"
+            }
+        );
+
+        res.end(data);
+
+        stats.successful++;
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Website file error:",
+            error
+        );
+
+        sendText(
+            res,
+            req,
+            500,
+            "Could not load website file."
+        );
+
+        return true;
+    }
+}
+
+// ============================================================
 // REQUEST BODY
 // ============================================================
 
@@ -666,34 +813,28 @@ const server =
             try {
 
                 // ============================================
-                // ROOT
+                // WEBSITE
                 // ============================================
 
                 if (
-                    pathname === "/" &&
-                    req.method === "GET"
+                    req.method === "GET" &&
+                    !pathname.startsWith("/api/")
                 ) {
 
-                    sendJSON(
-                        res,
-                        req,
-                        200,
-                        {
-                            name: "Rovival",
-                            status: "online",
-                            message:
-                                "Rovival server is running."
-                        }
-                    );
+                    if (
+                        serveWebsiteFile(
+                            req,
+                            res,
+                            pathname
+                        )
+                    ) {
 
-                    stats.successful++;
-
-                    return;
+                        return;
+                    }
                 }
 
                 // ============================================
                 // HEALTH
-                // Supports both /health and /api/health
                 // ============================================
 
                 if (
@@ -910,7 +1051,6 @@ const server =
                         avatars
                     );
 
-                    // Automatically log the new account in
                     const token =
                         createSession(
                             username
@@ -1827,3 +1967,8 @@ process.on(
     "SIGINT",
     shutdown
 );
+```
+
+**Make sure `index.html` is in the same GitHub repository and at the same level as `server.js`.** Then Render's Web Service can serve the homepage at `/` while all your `/api/...` endpoints continue working.
+
+One important change I made is the `WEBSITE` value: it now points to your Render site rather than the old Neocities address, so the CORS configuration matches the new setup.
