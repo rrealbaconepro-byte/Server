@@ -1,4 +1,3 @@
-```js
 // ============================================================
 // ROVIVAL SERVER
 // Node.js built-in modules only
@@ -16,7 +15,7 @@ const path = require("path");
 const HOST = "0.0.0.0";
 const PORT = Number(process.env.PORT) || 3040;
 
-// Website origin used for CORS/API requests
+// Render website
 const WEBSITE = "https://rovival.onrender.com";
 
 const DATA_DIR = path.join(__dirname, "playro_data");
@@ -60,7 +59,6 @@ function loadJSON(file, fallback) {
         return JSON.parse(data);
 
     } catch (error) {
-
         console.error(
             "Could not load:",
             file,
@@ -251,7 +249,6 @@ const stats = {
 // ============================================================
 
 function hashPassword(password) {
-
     const salt =
         crypto.randomBytes(16).toString("hex");
 
@@ -271,7 +268,6 @@ function hashPassword(password) {
 }
 
 function verifyPassword(password, account) {
-
     const hash =
         crypto.pbkdf2Sync(
             password,
@@ -292,7 +288,6 @@ function verifyPassword(password, account) {
 // ============================================================
 
 function createSession(username) {
-
     const token =
         crypto.randomBytes(32).toString("hex");
 
@@ -310,9 +305,7 @@ function createSession(username) {
 }
 
 function deleteSession(token) {
-
     if (sessions[token]) {
-
         delete sessions[token];
 
         saveJSON(
@@ -323,7 +316,6 @@ function deleteSession(token) {
 }
 
 function parseCookies(req) {
-
     const cookies = {};
 
     const header =
@@ -336,7 +328,6 @@ function parseCookies(req) {
     header
         .split(";")
         .forEach(part => {
-
             const index =
                 part.indexOf("=");
 
@@ -354,15 +345,18 @@ function parseCookies(req) {
                     .slice(index + 1)
                     .trim();
 
-            cookies[key] =
-                decodeURIComponent(value);
+            try {
+                cookies[key] =
+                    decodeURIComponent(value);
+            } catch {
+                cookies[key] = value;
+            }
         });
 
     return cookies;
 }
 
 function getUser(req) {
-
     const cookies =
         parseCookies(req);
 
@@ -392,7 +386,6 @@ function getUser(req) {
 // ============================================================
 
 function sessionCookie(token) {
-
     return [
         "rovival_session=" +
         encodeURIComponent(token),
@@ -409,23 +402,13 @@ function sessionCookie(token) {
     ].join("; ");
 }
 
-// ============================================================
-// CLEAR COOKIE
-// ============================================================
-
 function clearSessionCookie() {
-
     return [
         "rovival_session=",
-
         "Path=/",
-
         "HttpOnly",
-
         "SameSite=None",
-
         "Secure",
-
         "Max-Age=0"
     ].join("; ");
 }
@@ -435,7 +418,6 @@ function clearSessionCookie() {
 // ============================================================
 
 function setCORS(res, req) {
-
     const origin =
         req.headers.origin;
 
@@ -444,14 +426,11 @@ function setCORS(res, req) {
         origin === "http://localhost" ||
         origin === "http://127.0.0.1"
     ) {
-
         res.setHeader(
             "Access-Control-Allow-Origin",
             origin
         );
-
     } else {
-
         res.setHeader(
             "Access-Control-Allow-Origin",
             WEBSITE
@@ -485,11 +464,7 @@ function sendJSON(
     data,
     extraHeaders = {}
 ) {
-
-    setCORS(
-        res,
-        req
-    );
+    setCORS(res, req);
 
     res.writeHead(
         status,
@@ -515,11 +490,7 @@ function sendText(
     status,
     text
 ) {
-
-    setCORS(
-        res,
-        req
-    );
+    setCORS(res, req);
 
     res.writeHead(
         status,
@@ -533,7 +504,7 @@ function sendText(
 }
 
 // ============================================================
-// STATIC WEBSITE FILE SERVER
+// STATIC WEBSITE SERVER
 // ============================================================
 
 const MIME_TYPES = {
@@ -554,17 +525,17 @@ const MIME_TYPES = {
     ".ttf": "font/ttf"
 };
 
-function serveWebsiteFile(req, res, pathname) {
-
+function serveWebsiteFile(
+    req,
+    res,
+    pathname
+) {
     let decodedPath;
 
     try {
-
         decodedPath =
             decodeURIComponent(pathname);
-
     } catch {
-
         sendText(
             res,
             req,
@@ -591,14 +562,12 @@ function serveWebsiteFile(req, res, pathname) {
             relativePath
         );
 
-    // Prevent ../ path traversal
     if (
         filePath !== rootPath &&
         !filePath.startsWith(
             rootPath + path.sep
         )
     ) {
-
         sendText(
             res,
             req,
@@ -616,12 +585,9 @@ function serveWebsiteFile(req, res, pathname) {
     let stat;
 
     try {
-
         stat =
             fs.statSync(filePath);
-
     } catch {
-
         return false;
     }
 
@@ -638,7 +604,6 @@ function serveWebsiteFile(req, res, pathname) {
         "application/octet-stream";
 
     try {
-
         const data =
             fs.readFileSync(filePath);
 
@@ -658,9 +623,7 @@ function serveWebsiteFile(req, res, pathname) {
         stats.successful++;
 
         return true;
-
     } catch (error) {
-
         console.error(
             "Website file error:",
             error
@@ -682,23 +645,19 @@ function serveWebsiteFile(req, res, pathname) {
 // ============================================================
 
 function readBody(req) {
-
     return new Promise(
         (resolve, reject) => {
-
             let body = "";
 
             req.on(
                 "data",
                 chunk => {
-
                     body += chunk;
 
                     if (
                         body.length >
                         1024 * 1024
                     ) {
-
                         reject(
                             new Error(
                                 "Request body too large."
@@ -713,22 +672,16 @@ function readBody(req) {
             req.on(
                 "end",
                 () => {
-
                     if (!body) {
-
                         resolve({});
-
                         return;
                     }
 
                     try {
-
                         resolve(
                             JSON.parse(body)
                         );
-
                     } catch {
-
                         reject(
                             new Error(
                                 "Invalid JSON."
@@ -747,23 +700,17 @@ function readBody(req) {
 }
 
 // ============================================================
-// USERNAME VALIDATION
+// VALIDATION
 // ============================================================
 
 function validUsername(username) {
-
     return (
         typeof username === "string" &&
         /^[A-Za-z0-9_]{3,20}$/.test(username)
     );
 }
 
-// ============================================================
-// PASSWORD VALIDATION
-// ============================================================
-
 function validPassword(password) {
-
     return (
         typeof password === "string" &&
         password.length >= 4 &&
@@ -772,7 +719,7 @@ function validPassword(password) {
 }
 
 // ============================================================
-// ROUTER
+// SERVER
 // ============================================================
 
 const server =
@@ -791,20 +738,23 @@ const server =
             // ------------------------------------------------
 
             if (req.method === "OPTIONS") {
-
-                res.writeHead(
-                    204
-                );
-
+                res.writeHead(204);
                 res.end();
-
                 return;
             }
+
+            // ------------------------------------------------
+            // REQUEST URL
+            // ------------------------------------------------
+            // IMPORTANT:
+            // This intentionally uses string concatenation
+            // instead of a template literal.
 
             const requestURL =
                 new URL(
                     req.url,
-                    `http://${req.headers.host || "localhost"}`
+                    "http://" +
+                    (req.headers.host || "localhost")
                 );
 
             const pathname =
@@ -828,7 +778,6 @@ const server =
                             pathname
                         )
                     ) {
-
                         return;
                     }
                 }
@@ -845,6 +794,8 @@ const server =
                     req.method === "GET"
                 ) {
 
+                    stats.successful++;
+
                     sendJSON(
                         res,
                         req,
@@ -859,8 +810,6 @@ const server =
                                 new Date().toISOString()
                         }
                     );
-
-                    stats.successful++;
 
                     return;
                 }
@@ -1001,8 +950,7 @@ const server =
 
                     const account = {
                         id:
-                            crypto
-                                .randomUUID(),
+                            crypto.randomUUID(),
 
                         username,
 
@@ -1016,24 +964,15 @@ const server =
                             new Date().toISOString()
                     };
 
-                    accounts.push(
-                        account
-                    );
+                    accounts.push(account);
 
                     inventory[username] = [];
 
                     avatars[username] = {
-                        bodyColor:
-                            "#ffd323",
-
-                        shirt:
-                            "#2469a8",
-
-                        pants:
-                            "#222f5b",
-
-                        hat:
-                            false
+                        bodyColor: "#ffd323",
+                        shirt: "#2469a8",
+                        pants: "#222f5b",
+                        hat: false
                     };
 
                     saveJSON(
@@ -1198,7 +1137,6 @@ const server =
                     if (
                         cookies.rovival_session
                     ) {
-
                         deleteSession(
                             cookies.rovival_session
                         );
@@ -1397,23 +1335,21 @@ const server =
                     }
 
                     const game = {
-
                         id:
                             games.length
-                            ? Math.max(
-                                ...games.map(
-                                    game =>
-                                        game.id
-                                )
-                            ) + 1
-                            : 1,
+                                ? Math.max(
+                                    ...games.map(
+                                        game =>
+                                            game.id
+                                    )
+                                ) + 1
+                                : 1,
 
                         name,
 
                         description:
                             String(
-                                body.description ||
-                                ""
+                                body.description || ""
                             ),
 
                         author:
@@ -1427,9 +1363,7 @@ const server =
                             new Date().toISOString()
                     };
 
-                    games.push(
-                        game
-                    );
+                    games.push(game);
 
                     saveJSON(
                         GAMES_FILE,
@@ -1546,7 +1480,9 @@ const server =
                         catalog.find(
                             product =>
                                 product.id ===
-                                Number(body.itemId)
+                                Number(
+                                    body.itemId
+                                )
                         );
 
                     if (!item) {
@@ -1569,7 +1505,6 @@ const server =
                             user.username
                         ]
                     ) {
-
                         inventory[
                             user.username
                         ] = [];
@@ -1722,7 +1657,6 @@ const server =
                     avatars[
                         user.username
                     ] = {
-
                         bodyColor:
                             body.bodyColor ||
                             current.bodyColor ||
@@ -1799,6 +1733,7 @@ const server =
                     404,
                     {
                         success: false,
+
                         error:
                             "Rovival API endpoint not found."
                     }
@@ -1819,6 +1754,7 @@ const server =
                     500,
                     {
                         success: false,
+
                         error:
                             "Internal server error."
                     }
@@ -1828,13 +1764,12 @@ const server =
     );
 
 // ============================================================
-// ERROR HANDLING
+// SERVER ERROR HANDLING
 // ============================================================
 
 server.on(
     "error",
     error => {
-
         console.error(
             "Server error:",
             error
@@ -1967,8 +1902,3 @@ process.on(
     "SIGINT",
     shutdown
 );
-```
-
-**Make sure `index.html` is in the same GitHub repository and at the same level as `server.js`.** Then Render's Web Service can serve the homepage at `/` while all your `/api/...` endpoints continue working.
-
-One important change I made is the `WEBSITE` value: it now points to your Render site rather than the old Neocities address, so the CORS configuration matches the new setup.
