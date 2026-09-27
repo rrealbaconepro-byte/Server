@@ -1,37 +1,333 @@
-<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Rovival</title><style>
-*{box-sizing:border-box}body{margin:0;font:15px Arial;background:#f2f4f7;color:#20252b}button,input,textarea,select{font:inherit}button{border:0;cursor:pointer}.app{display:flex;height:100vh}.side{width:220px;background:#fff;border-right:1px solid #ddd;padding:15px}.logo{font-size:28px;font-weight:900;color:#f05a28;padding:10px}.nav{display:block;width:100%;text-align:left;background:none;padding:12px;border-radius:9px;font-weight:bold;color:#555}.nav:hover,.nav.on{background:#eee;color:#111}.user{margin-top:30px;border-top:1px solid #ddd;padding:15px}.main{flex:1;min-width:0;display:flex;flex-direction:column}.top{height:62px;background:#fff;border-bottom:1px solid #ddd;display:flex;gap:12px;align-items:center;padding:10px 20px}.search{width:min(600px,70%);padding:11px;border:1px solid #ddd;border-radius:9px}.content{padding:22px;overflow:auto}.page{display:none;max-width:1200px;margin:auto}.page.on{display:block}.hero{padding:30px;border-radius:16px;background:linear-gradient(120deg,#91d4ff,#b9df9b);height:250px}.hero h1{font-size:40px}.btn{background:#151515;color:#fff;padding:10px 16px;border-radius:8px;font-weight:bold}.orange{background:#f05a28}.light{background:#e8ebee;color:#222}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}.card,.panel{background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px}.thumb{height:105px;border-radius:9px;background:linear-gradient(135deg,#70b8ff,#d8efff);display:grid;place-items:center;font-size:38px}.muted{color:#707983;font-size:13px}.empty{padding:35px;text-align:center;background:#fff;border:1px dashed #ccc;border-radius:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.stage{height:330px;border-radius:12px;background:linear-gradient(#bde8ff 65%,#75b86c 65%);display:grid;place-items:center}.r6{width:130px;height:240px;position:relative}.part{position:absolute;border:2px solid #333}.head{left:34px;top:0;width:62px;height:62px;background:#ffd323}.torso{left:27px;top:68px;width:76px;height:92px;background:#2469a8}.arm{top:70px;width:28px;height:88px;background:#ffd323}.a1{left:-4px}.a2{right:-4px}.leg{top:160px;width:32px;height:82px;background:#222f5b}.l1{left:28px}.l2{right:28px}.chat{height:calc(100vh - 105px);display:grid;grid-template-columns:230px 1fr;background:#fff;border:1px solid #ddd;border-radius:12px;overflow:hidden}.people{border-right:1px solid #ddd}.person{padding:15px;border-bottom:1px solid #eee}.msgs{padding:20px;overflow:auto}.msg{background:#eee;padding:10px;border-radius:10px;margin:7px 0;max-width:70%}.mine{margin-left:auto;background:#f05a28;color:white}.compose{display:flex;padding:10px;border-top:1px solid #ddd}.compose input{flex:1;padding:10px}.creator{height:calc(100vh - 105px);display:grid;grid-template-columns:180px 1fr 230px;background:#252a2f;border-radius:12px;overflow:hidden;color:#fff}.tools,.inspect{padding:10px}.tools{border-right:1px solid #444}.inspect{border-left:1px solid #444}.tool{width:100%;padding:10px;margin-bottom:6px;background:#383e45;color:white;border-radius:7px;text-align:left}.tool.sel{background:#f05a28}.editor{position:relative}.editor canvas{width:100%;height:100%}.bar{position:absolute;top:10px;left:10px}.field{margin:10px 0}.field label{display:block;font-size:12px;margin-bottom:4px;color:#bbc}.field input,.field textarea,.field select{width:100%;padding:8px;background:#171a1d;color:#fff;border:1px solid #555;border-radius:6px}.game{display:none;position:fixed;inset:0;background:#82c9e8;z-index:20}.game.on{display:block}.game canvas{width:100%;height:100%}.exit{position:absolute;top:12px;left:12px}.gchat{position:absolute;left:12px;bottom:12px;width:300px;background:#111b;color:#fff;padding:10px}.gchat input{width:100%;padding:8px}.mobile{display:none}.modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;place-items:center}.modal.on{display:grid}.box{background:#fff;padding:22px;border-radius:14px;width:min(500px,90%)}@media(max-width:750px){.side{width:62px;padding:7px}.logo{font-size:0;text-align:center}.logo:after{content:"R";font-size:28px}.nav{font-size:0;text-align:center}.nav:first-letter{font-size:20px}.creator{grid-template-columns:55px 1fr}.inspect{display:none}.grid{grid-template-columns:1fr}.chat{grid-template-columns:65px 1fr}.people .person{font-size:0}.mobile{display:block}.top{padding:8px}.content{padding:12px}}
-</style></head><body>
-<div class=app><aside class=side><div class=logo>Rovival</div><button class="nav on" data-p=home>⌂ Home</button><button class=nav data-p=discover>◈ Discover</button><button class=nav data-p=create>▦ Create</button><button class=nav data-p=avatar>● Avatar</button><button class=nav data-p=friends>♙ Friends</button><button class=nav data-p=chat>☵ Chat</button><button class=nav data-p=market>◇ Marketplace</button><button class=nav data-p=inventory>□ Inventory</button><button class=nav data-p=profile>◉ Profile</button><button class=nav data-p=settings>⚙ Settings</button><div class=user><b id=uname>Guest</b><br><span class=muted>0 Robux</span></div></aside>
-<main class=main><header class=top><input class=search id=search placeholder="Search games, users, items..."><button class="btn light" id=signin>Sign In</button></header><section class=content>
-<div id=home class="page on"><div class=hero><h1>Welcome to Rovival</h1><p>Explore R6 worlds, create games, customize your avatar and play with friends.</p><button class="btn orange" onclick="page('discover')">Discover Games</button></div><h2>Featured</h2><div id=homegames class=cards></div><h2>Continue</h2><div class=empty>Nothing played yet.</div><h2>Friends</h2><div class=empty>You have no friends yet.</div></div>
-<div id=discover class=page><h1>Discover</h1><div id=games class=cards></div></div>
-<div id=friends class=page><h1>Friends</h1><div class=empty>No friends yet.</div></div>
-<div id=avatar class=page><h1>Avatar — Classic R6</h1><div class=grid><div class=stage><div class=r6><i class="part head"></i><i class="part torso"></i><i class="part arm a1"></i><i class="part arm a2"></i><i class="part leg l1"></i><i class="part leg l2"></i></div></div><div class=panel><h2>R6 Avatar</h2><p class=muted>No R15. Six classic body parts.</p><div class=field><label>Body</label><input type=color id=body value=#ffd323></div><div class=field><label>Shirt</label><input type=color id=shirt value=#2469a8></div><div class=field><label>Pants</label><input type=color id=pants value=#222f5b></div><button class="btn orange" onclick=saveAvatar()>Save Avatar</button></div></div></div>
-<div id=chat class=page><h1>Chat</h1><div class=chat><div class=people><div class=person>Rovival<br><span class=muted>System</span></div></div><div style="display:flex;flex-direction:column"><div id=msgs class=msgs>Welcome to Rovival chat!</div><div class=compose><input id=ci placeholder="Message..."><button class="btn orange" onclick=sendChat()>Send</button></div></div></div></div>
-<div id=market class=page><h1>Marketplace</h1><div id=items class=cards></div></div>
-<div id=inventory class=page><h1>Inventory</h1><div class=empty>Your inventory is empty.</div></div>
-<div id=profile class=page><h1>Profile</h1><div class=panel><h2 id=pname>Guest</h2><p>Rovival player</p><p>Friends: 0</p><p>Games: 0</p></div></div>
-<div id=settings class=page><h1>Settings</h1><div class=panel><p>Graphics <input type=range></p><p>Music <input type=checkbox checked></p><p>Game sounds <input type=checkbox checked></p><button class="btn light" onclick="localStorage.clear();location.reload()">Reset local data</button></div></div>
-<div id=create class=page><h1>Create</h1><div class=creator><div class=tools><button class="tool sel" data-t=select>↖ Select</button><button class=tool data-t=block>▣ Block</button><button class=tool data-t=spawn>⌂ Spawn</button><button class=tool data-t=erase>⌫ Delete</button><button class=tool data-t=color>● Color</button><button class="tool" onclick=playtest()>▶ Playtest</button></div><div class=editor><canvas id=ec></canvas><div class=bar><button class="btn" onclick=newProject()>New</button> <button class="btn" onclick=saveProject()>Save</button> <button class="btn orange" onclick=publishProject()>Publish</button></div></div><div class=inspect><p style="font-size:12px">Build a game directly on the site.</p><div class=field><label>Name</label><input id=gname value="My Rovival Game"></div><div class=field><label>Description</label><textarea id=gdesc rows=4>A game made in Rovival.</textarea></div><div class=field><label>Thumbnail</label><input id=thumb type=file accept=image/*></div><div class=field><label>Visibility</label><select id=vis><option>Public</option><option>Private</option></select></div><div class=field><label>Block color</label><input id=bcolor type=color value=#4d8cff></div><p class=muted>Click to place blocks. Drag to move them.</p></div></div></div>
-</section></main></div>
-<div id=auth class=modal><div class=box><h2>Sign in</h2><input id=au placeholder=Username style="width:100%;padding:10px"><br><br><input id=ap type=password placeholder=Password style="width:100%;padding:10px"><br><br><button class="btn orange" onclick=login()>Sign In</button> <button class="btn light" onclick=closeAuth()>Guest</button></div></div>
-<div id=game class=game><canvas id=gc></canvas><button class="btn exit" onclick=exitGame()>← Exit</button><div class=gchat><div id=gl>Server: Welcome to the game!<br></div><input id=gi placeholder="Press Enter to chat"></div><div class=mobile><button class=btn style="position:absolute;right:25px;bottom:35px" onclick=jump()>JUMP</button></div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rovival</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#ececec}
+.banner{
+  height:90px;
+  background:url("https://i.postimg.cc/Y0BsmQXW/IMG-0663.jpg") center/cover;
+}
+.nav{
+  height:42px;
+  background:#1976d2;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  color:#fff;
+}
+.logo{height:28px;margin-right:12px}
+.nav a{
+  color:#fff;
+  text-decoration:none;
+  margin-right:14px;
+  font-size:14px;
+  font-weight:bold;
+}
+.search{margin-left:auto;margin-right:10px}
+.search input{
+  height:26px;
+  width:180px;
+  border:none;
+  padding:0 8px;
+}
+.user{font-weight:bold;font-size:13px}
+
+.page{display:none}
+.active{display:block}
+
+.wrap{
+  width:1100px;
+  margin:20px auto;
+  display:flex;
+  gap:18px;
+}
+.sidebar{
+  width:180px;
+  background:#fff;
+  border:1px solid #ccc;
+  padding:12px;
+}
+.sidebar a{
+  display:block;
+  color:#1b4fa3;
+  text-decoration:none;
+  padding:6px 0;
+}
+.content{flex:1}
+.welcome{
+  background:#fff;
+  border:1px solid #ccc;
+  padding:16px;
+  margin-bottom:15px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.game{
+  background:#fff;
+  border:1px solid #ccc;
+  padding:10px;
+}
+.thumb{
+  height:140px;
+  background:#c8dcff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.play{
+  width:100%;
+  margin-top:8px;
+  background:#38b54a;
+  color:#fff;
+  border:none;
+  padding:7px;
+  cursor:pointer;
+}
+.actions{margin-bottom:12px}
+.btn{
+  background:#1976d2;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  margin-right:8px;
+  cursor:pointer;
+}
+.card{
+  width:420px;
+  margin:35px auto;
+  background:#fff;
+  border:1px solid #ccc;
+  padding:22px;
+}
+.card h2{text-align:center;margin-bottom:16px}
+.card input{
+  width:100%;
+  height:38px;
+  margin:8px 0;
+  padding:0 10px;
+}
+.big{
+  width:100%;
+  height:40px;
+  border:none;
+  color:#fff;
+  background:#36b54a;
+  font-weight:bold;
+}
+.link{
+  text-align:center;
+  margin-top:12px;
+}
+.error{
+  display:none;
+  background:#ffe3e3;
+  color:#900;
+  border:1px solid #c44;
+  padding:8px;
+  margin-bottom:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="banner"></div>
+
+<div class="nav">
+  <img class="logo" src="https://i.postimg.cc/0NzDVW5G/Chat-GPT-Image-Sep-27-2026-at-09-53-38-AM-removebg-preview.png">
+
+  <a href="#" onclick="showPage('home')">Home</a>
+  <a href="#">Games</a>
+  <a href="#">Catalog</a>
+  <a href="#">Avatar</a>
+  <a href="#">Friends</a>
+
+  <div class="search">
+    <input placeholder="Search Rovival">
+  </div>
+
+  <a href="#" onclick="showPage('login')">Login</a>
+  <a href="#" onclick="showPage('signup')">Sign Up</a>
+
+  <div class="user" id="navUser">OnlyTwentyCharacters</div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+
+<div class="wrap">
+
+<div class="sidebar">
+<b>Navigation</b>
+<a href="#">Profile</a>
+<a href="#">Friends</a>
+<a href="#">Messages</a>
+<a href="#">Inventory</a>
+<a href="#">Groups</a>
+</div>
+
+<div class="content">
+
+<div class="actions">
+<button class="btn" onclick="refreshGames()">Refresh</button>
+</div>
+
+<div class="error" id="serverError">
+Game servers are currently offline.
+</div>
+
+<div class="welcome">
+<h2>Welcome back, <span id="homeUser">OnlyTwentyCharacters</span>!</h2>
+<p>Experience the classic 2017 Rovival platform.</p>
+</div>
+
+<div class="grid" id="gameGrid">
+
+<div class="game">
+<div class="thumb">150×150</div>
+<h4>Work at Pizza Place</h4>
+<p>👥 4,283</p>
+<button class="play" onclick="joinGame()">Play</button>
+</div>
+
+<div class="game">
+<div class="thumb">150×150</div>
+<h4>Natural Disaster</h4>
+<p>👥 2,118</p>
+<button class="play" onclick="joinGame()">Play</button>
+</div>
+
+<div class="game">
+<div class="thumb">150×150</div>
+<h4>Jailbreak</h4>
+<p>👥 8,923</p>
+<button class="play" onclick="joinGame()">Play</button>
+</div>
+
+<div class="game">
+<div class="thumb">150×150</div>
+<h4>Hide & Seek</h4>
+<p>👥 1,634</p>
+<button class="play" onclick="joinGame()">Play</button>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="page">
+
+<div class="card">
+<h2>Login to Rovival</h2>
+
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+
+<button class="big" onclick="login()">Login</button>
+
+<div class="link">
+Don't have an account?
+<a href="#" onclick="showPage('signup')">Sign Up</a>
+</div>
+
+</div>
+</div>
+
+<!-- SIGNUP -->
+<div id="signup" class="page">
+
+<div class="card">
+<h2>Create Rovival Account</h2>
+
+<input id="signUser" placeholder="Username">
+<input id="signPass" type="password" placeholder="Password">
+<input id="signPass2" type="password" placeholder="Confirm Password">
+
+<button class="big" onclick="signup()">Create Account</button>
+
+<div class="link">
+Already have one?
+<a href="#" onclick="showPage('login')">Login</a>
+</div>
+
+</div>
+</div>
+
 <script>
-const API="https://rovival.onrender.com/api",G=[["Escape the iPhone","📱","Parkour"],["Natural Disaster Survival","🌪️","Survival"],["Rovival Obby","🧱","Obby"],["Brick Battle","⚔️","Fighting"],["Build Your House","🏠","Building"],["Rovival High School","🏫","Roleplay"],["Rovival Racing","🏎️","Racing"],["Hide and Seek","👀","Party"]],I=[["Classic Blue Shirt","#2469a8"],["Classic Red Shirt","#d83232"],["Green Shirt","#37a653"],["Classic Pants","#222f5b"],["Black Pants","#222"],["Classic Head","#ffd323"],["Classic Hat","#333"]];
-let user=localStorage.getItem("rovival_user")||"Guest",blocks=[],tool="select",drag=-1,keys={};
-function esc(s){return String(s).replace(/[&<>"]/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[x]))}
-function card(g){return `<div class=card><div class=thumb>${g[1]}</div><h3>${esc(g[0])}</h3><span class=muted>${g[2]} · R6</span><br><br><button class="btn orange" onclick="launch('${esc(g[0])}')">Play</button></div>`}
-homegames.innerHTML=G.slice(0,5).map(card).join("");games.innerHTML=G.map(card).join("");items.innerHTML=I.map(i=>`<div class=card><div class=thumb style="background:${i[1]}">◼</div><h3>${i[0]}</h3><button class="btn orange" onclick="alert('Item added to local inventory')">Buy · 0</button></div>`).join("");
-uname.textContent=user;pname.textContent=user;
-function page(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));document.getElementById(id).classList.add("on");document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.p==id))}
-document.querySelectorAll(".nav").forEach(x=>x.onclick=()=>page(x.dataset.p));search.oninput=()=>{let q=search.value.toLowerCase();page("discover");document.querySelectorAll("#games .card").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"":"none")};
-signin.onclick=()=>auth.classList.add("on");function closeAuth(){auth.classList.remove("on")}function login(){user=au.value.trim()||"Player";localStorage.setItem("rovival_user",user);uname.textContent=user;pname.textContent=user;closeAuth()}
-function saveAvatar(){document.querySelectorAll(".head,.arm").forEach(x=>x.style.background=body.value);document.querySelector(".torso").style.background=shirt.value;document.querySelectorAll(".leg").forEach(x=>x.style.background=pants.value);localStorage.setItem("avatar",JSON.stringify({body:body.value,shirt:shirt.value,pants:pants.value}))}
-ci.onkeydown=e=>{if(e.key=="Enter")sendChat()};function sendChat(){let v=ci.value.trim();if(!v)return;msgs.innerHTML+=`<div class="msg mine"><b>${esc(user)}:</b> ${esc(v)}</div>`;ci.value="";msgs.scrollTop=99999}
-const c=ec.getContext("2d");function resize(){ec.width=ec.clientWidth*devicePixelRatio;ec.height=ec.clientHeight*devicePixelRatio;c.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw()}addEventListener("resize",resize);setTimeout(resize,50);
-function draw(){let w=ec.clientWidth,h=ec.clientHeight;c.clearRect(0,0,w,h);c.fillStyle="#83cbe9";c.fillRect(0,0,w,h*.65);c.fillStyle="#71aa60";c.fillRect(0,h*.65,w,h*.35);c.strokeStyle="#ffffff22";for(let x=0;x<w;x+=40){c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke()}blocks.forEach((b,i)=>{c.fillStyle=b.color;c.fillRect(b.x,b.y,b.w,b.h);c.strokeStyle=i==drag?"#fff":"#222";c.strokeRect(b.x,b.y,b.w,b.h)})}
-function pos(e){let r=ec.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}ec.onpointerdown=e=>{let p=pos(e);if(tool=="block"){blocks.push({x:p.x-30,y:p.y-30,w:60,h:60,color:bcolor.value});return draw()}if(tool=="spawn"){blocks.push({x:p.x-18,y:p.y-8,w:36,h:16,color:"#f05a28"});return draw()}if(tool=="erase"){blocks=blocks.filter(b=>!(p.x>b.x&&p.x<b.x+b.w&&p.y>b.y&&p.y<b.y+b.h));return draw()}drag=blocks.findIndex(b=>p.x>b.x&&p.x<b.x+b.w&&p.y>b.y&&p.y<b.y+b.h);ec.setPointerCapture(e.pointerId)};ec.onpointermove=e=>{if(drag<0)return;let p=pos(e);blocks[drag].x=p.x-blocks[drag].w/2;blocks[drag].y=p.y-blocks[drag].h/2;draw()};ec.onpointerup=()=>drag=-1;
-document.querySelectorAll(".tool[data-t]").forEach(x=>x.onclick=()=>{tool=x.dataset.t;document.querySelectorAll(".tool").forEach(y=>y.classList.remove("sel"));x.classList.add("sel")});function newProject(){blocks=[];gname.value="My Rovival Game";draw()}function saveProject(){localStorage.setItem("rovival_project",JSON.stringify({name:gname.value,description:gdesc.value,visibility:vis.value,blocks}));alert("Saved on this device.")}async function publishProject(){saveProject();try{let r=await fetch(API+"/games/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:gname.value,description:gdesc.value,visibility:vis.value,blocks})});alert(r.ok?"Published to Rovival!":"Saved locally; server endpoint needs to accept the creator payload.")}catch(e){alert("Saved locally. Render API is unavailable right now.")}}
-let gcx=gc.getContext("2d"),raf,px=0,py=0,vy=0,ground=true;function launch(n){game.classList.add("on");px=0;py=0;vy=0;gl.innerHTML=`Server: Welcome to ${esc(n)}!<br>R6 mode enabled.<br>`;loop()}function exitGame(){game.classList.remove("on");cancelAnimationFrame(raf)}function resizeg(){gc.width=innerWidth*devicePixelRatio;gc.height=innerHeight*devicePixelRatio;gcx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}addEventListener("resize",resizeg);function loop(){if(!game.classList.contains("on"))return;let w=innerWidth,h=innerHeight;gcx.clearRect(0,0,w,h);gcx.fillStyle="#83cbe9";gcx.fillRect(0,0,w,h);gcx.fillStyle="#70aa5e";gcx.fillRect(0,h*.65,w,h*.35);let sp=keys.shift?5:3;px+=((keys.d?1:0)-(keys.a?1:0))*sp;if(keys[" "]&&ground){vy=9;ground=false}vy-=.45;py+=vy;if(py<0){py=0;vy=0;ground=true}let x=w/2+px,y=h*.65-py;drawR6(x,y);raf=requestAnimationFrame(loop)}function drawR6(x,y){function q(a,b,w,h,col){gcx.fillStyle=col;gcx.fillRect(x+a,y+b,w,h);gcx.strokeStyle="#222";gcx.strokeRect(x+a,y+b,w,h)}q(-25,-115,50,50,body.value);q(-30,-62,60,68,shirt.value);q(-55,-60,22,65,body.value);q(33,-60,22,65,body.value);q(-25,6,23,58,pants.value);q(3,6,23,58,pants.value)}
-document.onkeydown=e=>{keys[e.key.toLowerCase()]=true;if(game.classList.contains("on")&&e.key=="Enter")gi.focus()};document.onkeyup=e=>keys[e.key.toLowerCase()]=false;gi.onkeydown=e=>{if(e.key=="Enter"&&gi.value.trim()){gl.innerHTML+=`<b>${esc(user)}:</b> ${esc(gi.value)}<br>`;gi.value=""}};function jump(){keys[" "]=true;setTimeout(()=>keys[" "]=false,80)}function playtest(){launch(gname.value||"My Rovival Game")}
-</script></body></html>
+let serverOnline=true;
+
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+}
+
+function signup(){
+ const u=signUser.value.trim();
+ const p=signPass.value;
+ const c=signPass2.value;
+
+ if(u.length<3){alert("Username too short");return;}
+ if(p!==c){alert("Passwords do not match");return;}
+
+ localStorage.setItem("rovivalAccount",
+ JSON.stringify({user:u,pass:p}));
+
+ localStorage.setItem("currentUser",u);
+ updateUser();
+ alert("Account created!");
+ showPage("home");
+}
+
+function login(){
+ const acc=JSON.parse(localStorage.getItem("rovivalAccount"));
+
+ if(!acc){alert("Create an account first.");return;}
+
+ if(loginUser.value===acc.user &&
+    loginPass.value===acc.pass){
+
+    localStorage.setItem("currentUser",acc.user);
+    updateUser();
+    alert("Logged in!");
+    showPage("home");
+ }else{
+    alert("Wrong username or password.");
+ }
+}
+
+function updateUser(){
+ const user=localStorage.getItem("currentUser")||
+ "OnlyTwentyCharacters";
+
+ navUser.textContent=user;
+ homeUser.textContent=user;
+}
+
+function refreshGames(){
+ serverError.style.display=serverOnline?"none":"block";
+ gameGrid.style.display=serverOnline?"grid":"none";
+}
+
+function joinGame(){
+ if(!serverOnline){
+   refreshGames();
+   return;
+ }
+ alert("Joining game...");
+}
+
+updateUser();
+refreshGames();
+</script>
+
+</body>
+</html>
