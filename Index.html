@@ -1,0 +1,2761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>Rovival</title>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Rovival is a classic-inspired online gaming platform where you can explore, build, play games, customize your avatar and more.">
+
+    <meta
+        name="keywords"
+        content="Rovival, games, classic games, building games, online games, virtual worlds, obby, brick battle">
+
+    <style>
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        a {
+            color: #0000ee;
+        }
+
+        a:visited {
+            color: #551a8b;
+        }
+
+        #Site {
+            width: 100%;
+        }
+
+        #Page {
+            margin: 0 auto;
+            max-width: 720px;
+            padding: 0 10px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        #Header {
+            margin: 0 auto;
+            max-width: 720px;
+            border-bottom: 1px solid black;
+            background: white;
+        }
+
+        #HeaderTop {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 58px;
+            padding: 5px 10px;
+        }
+
+        #Logo {
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff6900;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #HeaderLinks {
+            text-align: right;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        #HeaderLinks button {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            color: #0000ee;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #LoggedUser {
+            display: none;
+            font-weight: bold;
+        }
+
+        /* =========================
+           TOP BANNER
+        ========================= */
+
+        #TopBanner {
+            width: 100%;
+            margin: 0 0 12px 0;
+            border: 1px solid black;
+            overflow: hidden;
+        }
+
+        #TopBanner img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 260px;
+            object-fit: cover;
+        }
+
+        /* =========================
+           NAV
+        ========================= */
+
+        #Navigation {
+            background-color: #bbbbbb;
+            border: 1px solid black;
+            padding: 7px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        #Navigation button {
+            background: transparent;
+            border: none;
+            color: #0000ee;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0 7px;
+            padding: 2px;
+        }
+
+        /* =========================
+           PAGES
+        ========================= */
+
+        .PageSection {
+            display: none;
+        }
+
+        .PageSection.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-top: 15px;
+        }
+
+        h2 {
+            font-size: 23px;
+        }
+
+        h3 {
+            font-size: 18px;
+        }
+
+        /* =========================
+           ALERT
+        ========================= */
+
+        #HomepageAlert {
+            color: white;
+            background-color: rgb(255 175 0);
+            text-align: center;
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        /* =========================
+           HOME
+        ========================= */
+
+        #HomeIntro {
+            line-height: 1.5;
+        }
+
+        #WelcomeBox {
+            border: 1px solid black;
+            background-color: #eeeeee;
+            padding: 10px;
+            margin-top: 15px;
+        }
+
+        #WelcomeBox h2 {
+            margin-top: 5px;
+        }
+
+        #RightSideStuff {
+            text-align: right;
+        }
+
+        #YouTubePlayerContainer {
+            max-width: 560px;
+            text-align: right;
+            margin-left: auto;
+        }
+
+        #YouTubePlayerContainer iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+
+        /* =========================
+           COOL PLACES
+        ========================= */
+
+        #CoolPlacesPane {
+            display: flex;
+            width: 100%;
+        }
+
+        #CoolPlacesText {
+            background-color: #bbbbbb;
+            padding: 0.1px 10px 10px 10px;
+            width: 22%;
+            border: solid 1px black;
+            float: left;
+        }
+
+        #CoolPlacesText h3 {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        #CoolPlacesContent {
+            background-color: rgb(230, 230, 230);
+            border: solid 1px black;
+            float: left;
+            width: 72%;
+            border-left: none;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .GameThumbnail {
+            width: 125px;
+            height: 90px;
+            object-fit: cover;
+            border: 1px solid #777;
+        }
+
+        .PlaceCard {
+            position: relative;
+            margin: 3px;
+            cursor: pointer;
+        }
+
+        .PlaceLock {
+            position: absolute;
+            right: 3px;
+            top: 3px;
+            background: rgba(0,0,0,.8);
+            color: white;
+            padding: 2px 5px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           GAMES
+        ========================= */
+
+        .GamesList {
+            border: 1px solid black;
+        }
+
+        .GameRow {
+            display: flex;
+            align-items: center;
+            padding: 9px;
+            border-bottom: 1px solid #aaa;
+            background: #eeeeee;
+        }
+
+        .GameRow:last-child {
+            border-bottom: none;
+        }
+
+        .GameRow:nth-child(even) {
+            background: #dddddd;
+        }
+
+        .GameThumbnailSmall {
+            width: 100px;
+            height: 70px;
+            object-fit: cover;
+            border: 1px solid black;
+            margin-right: 12px;
+        }
+
+        .GameDetails {
+            flex: 1;
+        }
+
+        .GameDetails strong {
+            font-size: 17px;
+        }
+
+        .GameDetails small {
+            display: block;
+            margin-top: 4px;
+            color: #555;
+        }
+
+        .LockedButton {
+            background: #777;
+            color: white;
+            border: 1px solid #333;
+            padding: 7px 12px;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           CATALOG
+        ========================= */
+
+        .CatalogGrid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .CatalogItem {
+            border: 1px solid black;
+            background: #eeeeee;
+            padding: 10px;
+        }
+
+        .CatalogIcon {
+            height: 110px;
+            background: #dddddd;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        .CatalogItem button {
+            width: 100%;
+            padding: 7px;
+            background: #ff6900;
+            color: white;
+            border: 1px solid #a83f00;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* =========================
+           AVATAR
+        ========================= */
+
+        #AvatarEditor {
+            display: flex;
+            gap: 15px;
+        }
+
+        #AvatarPreview {
+            width: 280px;
+            min-height: 330px;
+            border: 1px solid black;
+            background: #eeeeee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #AvatarCharacter {
+            width: 130px;
+            height: 250px;
+            position: relative;
+        }
+
+        #AvatarHead {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            left: 20px;
+            top: 0;
+            background: #f4c28c;
+            border: 2px solid black;
+        }
+
+        #AvatarBody {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            left: 15px;
+            top: 90px;
+            background: #1688d8;
+            border: 2px solid black;
+        }
+
+        #AvatarLeg1,
+        #AvatarLeg2 {
+            position: absolute;
+            width: 42px;
+            height: 65px;
+            top: 190px;
+            background: #444;
+            border: 2px solid black;
+        }
+
+        #AvatarLeg1 {
+            left: 17px;
+        }
+
+        #AvatarLeg2 {
+            left: 70px;
+        }
+
+        #AvatarControls {
+            flex: 1;
+            border: 1px solid black;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .ColorButtons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .ColorButton {
+            width: 35px;
+            height: 35px;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+
+        #CopyColorButton,
+        #SaveAvatarButton {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+
+        #CopyColorButton {
+            background: #444;
+            color: white;
+        }
+
+        #SaveAvatarButton {
+            background: #ff6900;
+            color: white;
+        }
+
+        /* =========================
+           ACCOUNT
+        ========================= */
+
+        #AccountBox {
+            border: 1px solid black;
+            background: #eeeeee;
+            padding: 15px;
+        }
+
+        .AccountRow {
+            border-bottom: 1px solid #bbb;
+            padding: 10px 0;
+        }
+
+        .AccountRow:last-child {
+            border-bottom: none;
+        }
+
+        #LogoutButton {
+            margin-top: 15px;
+            padding: 8px 15px;
+            background: #d9534f;
+            color: white;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+
+        /* =========================
+           MODALS
+        ========================= */
+
+        #LoginModal,
+        #SignupModal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.65);
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .ModalBox {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border: 2px solid black;
+            padding: 15px;
+        }
+
+        .ModalBox h2 {
+            margin-top: 5px;
+        }
+
+        .ModalBox input {
+            width: 100%;
+            padding: 9px;
+            margin-bottom: 10px;
+            border: 1px solid #777;
+            font-size: 14px;
+        }
+
+        .ModalBox button {
+            padding: 8px 12px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+
+        .ModalPrimary {
+            background: #ff6900;
+            color: white;
+        }
+
+        .ModalCancel {
+            background: #ddd;
+        }
+
+        .ModalStatus {
+            min-height: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        #PreFooter {
+            margin-top: 30px;
+        }
+
+        #Footer {
+            border-top: 1px solid black;
+            margin-top: 30px;
+            padding: 15px 0;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width:600px) {
+
+            #HeaderTop {
+                display: block;
+                text-align: center;
+            }
+
+            #HeaderLinks {
+                margin-top: 5px;
+            }
+
+            #Navigation button {
+                margin: 2px 4px;
+            }
+
+            #CoolPlacesPane {
+                display: block;
+            }
+
+            #CoolPlacesText {
+                width: auto;
+                float: none;
+            }
+
+            #CoolPlacesContent {
+                width: auto;
+                border-left: 1px solid black;
+                border-top: none;
+                float: none;
+            }
+
+            #AvatarEditor {
+                display: block;
+            }
+
+            #AvatarPreview {
+                width: auto;
+                margin-bottom: 10px;
+            }
+
+            .CatalogGrid {
+                grid-template-columns: 1fr;
+            }
+
+            .GameRow {
+                display: block;
+            }
+
+            .GameThumbnailSmall {
+                margin-bottom: 8px;
+            }
+
+            .LockedButton {
+                margin-top: 8px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<noscript>
+
+    <div style="text-align:center">
+
+        <h1>JavaScript required</h1>
+
+        This page requires JavaScript to work.
+
+    </div>
+
+</noscript>
+
+
+<div id="Site">
+
+
+<!-- ======================================
+     HEADER
+======================================= -->
+
+<div id="Header">
+
+    <div id="HeaderTop">
+
+        <a
+            id="Logo"
+            href="#"
+            onclick="showPage('home'); return false;">
+            Rovival
+        </a>
+
+
+        <div id="HeaderLinks">
+
+            <span id="LoggedUser"></span>
+
+            <button
+                id="HeaderLogin"
+                onclick="openLogin()">
+                Login
+            </button>
+
+            |
+
+            <button
+                id="HeaderSignup"
+                onclick="openSignup()">
+                Create Account
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="Navigation">
+
+        <button onclick="showPage('home')">
+            Home
+        </button>
+
+        |
+
+        <button onclick="showPage('games')">
+            Games
+        </button>
+
+        |
+
+        <button onclick="showPage('catalog')">
+            Catalog
+        </button>
+
+        |
+
+        <button onclick="showPage('avatar')">
+            Avatar
+        </button>
+
+        |
+
+        <button onclick="showPage('account')">
+            Account
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="Page">
+
+
+<!-- ======================================
+     TOP BANNER
+======================================= -->
+
+<div id="TopBanner">
+
+    <img
+        src="https://i.postimg.cc/Y0BsmQXW/IMG-0663.jpg"
+        alt="Rovival banner">
+
+</div>
+
+
+<!-- ======================================
+     HOME
+======================================= -->
+
+<section
+    id="HomePage"
+    class="PageSection active">
+
+
+    <p id="HomepageAlert">
+
+        Welcome to Rovival!
+        Games are currently being built.
+
+    </p>
+
+
+    <h1>
+        Welcome
+    </h1>
+
+
+    <div id="HomeIntro">
+
+        Welcome to the official
+        <strong>Rovival</strong> website!
+
+        <br>
+        <br>
+
+        Rovival is a classic-inspired gaming
+        platform where you can explore cool
+        places, meet players, build things,
+        customize your avatar and play games.
+
+        <br>
+        <br>
+
+        On Rovival, you can...
+
+        <ol>
+
+            <li>
+                Explore cool Rovival games
+            </li>
+
+            <li>
+                Create your own account
+            </li>
+
+            <li>
+                Customize your avatar
+            </li>
+
+            <li>
+                Explore classic-style worlds
+            </li>
+
+            <li>
+                Play games when they are released
+            </li>
+
+        </ol>
+
+    </div>
+
+
+    <div id="WelcomeBox">
+
+        <h2>
+            Adventure Awaits
+        </h2>
+
+        Explore Rovival and discover
+        everything the platform has to offer.
+
+        <br>
+        <br>
+
+        New games and features are currently
+        being built.
+
+    </div>
+
+
+    <br>
+
+
+    <div id="RightSideStuff">
+
+        <div id="YouTubePlayerContainer">
+
+            <iframe
+                src="https://www.youtube.com/embed/LWMULV-J3yE"
+                title="Rovival YouTube video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+            </iframe>
+
+        </div>
+
+        <br>
+
+        <small>
+            Rovival video
+        </small>
+
+    </div>
+
+
+    <br>
+    <br>
+
+
+    <div id="CoolPlacesPane">
+
+        <div id="CoolPlacesText">
+
+            <h3>
+                Cool Places
+            </h3>
+
+            Check out some of the
+            games being built!
+
+            <br>
+
+            <small>
+                More games coming soon!
+            </small>
+
+        </div>
+
+
+        <div id="CoolPlacesContent">
+
+            <div
+                class="PlaceCard"
+                onclick="showPage('games')">
+
+                <div
+                    style="
+                    width:125px;
+                    height:90px;
+                    background:#aaa;
+                    border:1px solid #555;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-align:center;
+                    ">
+
+                    Escape the iPhone
+
+                </div>
+
+                <span class="PlaceLock">
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div
+                class="PlaceCard"
+                onclick="showPage('games')">
+
+                <div
+                    style="
+                    width:125px;
+                    height:90px;
+                    background:#aaa;
+                    border:1px solid #555;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-align:center;
+                    ">
+
+                    Natural Disaster
+
+                </div>
+
+                <span class="PlaceLock">
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div
+                class="PlaceCard"
+                onclick="showPage('games')">
+
+                <div
+                    style="
+                    width:125px;
+                    height:90px;
+                    background:#aaa;
+                    border:1px solid #555;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-align:center;
+                    ">
+
+                    Rovival Obby
+
+                </div>
+
+                <span class="PlaceLock">
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div
+                class="PlaceCard"
+                onclick="showPage('games')">
+
+                <div
+                    style="
+                    width:125px;
+                    height:90px;
+                    background:#aaa;
+                    border:1px solid #555;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-align:center;
+                    ">
+
+                    Brick Battle
+
+                </div>
+
+                <span class="PlaceLock">
+                    🔒
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <small>
+        Games will become available as development
+        progresses.
+    </small>
+
+
+</section>
+
+
+<!-- ======================================
+     GAMES PAGE
+======================================= -->
+
+<section
+    id="GamesPage"
+    class="PageSection">
+
+    <h1>
+        Games
+    </h1>
+
+
+    <p>
+        These are the games currently being
+        developed for Rovival.
+    </p>
+
+
+    <div class="GamesList">
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#aaa;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                ">
+
+                iPhone
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Escape the iPhone
+                </strong>
+
+                <small>
+                    Escape from a giant iPhone.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#6aa84f;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                ">
+
+                Disaster
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Natural Disaster Survival
+                </strong>
+
+                <small>
+                    Survive dangerous disasters.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#f1c232;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                ">
+
+                Obby
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Rovival Obby
+                </strong>
+
+                <small>
+                    Complete obstacle courses.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#cc0000;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                color:white;
+                ">
+
+                Battle
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Brick Battle
+                </strong>
+
+                <small>
+                    Classic brick battle action.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#674ea7;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                color:white;
+                ">
+
+                House
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Build Your House
+                </strong>
+
+                <small>
+                    Build and decorate your own house.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#3d85c6;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                color:white;
+                ">
+
+                School
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Rovival High School
+                </strong>
+
+                <small>
+                    Explore the Rovival school.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#674ea7;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                color:white;
+                ">
+
+                Racing
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Rovival Racing
+                </strong>
+
+                <small>
+                    Race through Rovival.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+        <div class="GameRow">
+
+            <div
+                class="GameThumbnailSmall"
+                style="
+                background:#76a5af;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                text-align:center;
+                ">
+
+                Hide & Seek
+
+            </div>
+
+            <div class="GameDetails">
+
+                <strong>
+                    Hide and Seek
+                </strong>
+
+                <small>
+                    Hide from the seeker.
+                </small>
+
+            </div>
+
+            <button
+                class="LockedButton"
+                disabled>
+
+                🔒 Locked
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ======================================
+     CATALOG
+======================================= -->
+
+<section
+    id="CatalogPage"
+    class="PageSection">
+
+    <h1>
+        Catalog
+    </h1>
+
+    <p>
+        Get items for your Rovival avatar.
+    </p>
+
+
+    <div class="CatalogGrid">
+
+
+        <div class="CatalogItem">
+
+            <div class="CatalogIcon">
+                👕
+            </div>
+
+            <h3>
+                Classic Shirt
+            </h3>
+
+            <p>
+                A classic Rovival shirt.
+            </p>
+
+            <button
+                onclick="buyItem('classic-shirt')">
+
+                Buy
+
+            </button>
+
+        </div>
+
+
+        <div class="CatalogItem">
+
+            <div class="CatalogIcon">
+                🧢
+            </div>
+
+            <h3>
+                Classic Cap
+            </h3>
+
+            <p>
+                A classic cap.
+            </p>
+
+            <button
+                onclick="buyItem('classic-cap')">
+
+                Buy
+
+            </button>
+
+        </div>
+
+
+        <div class="CatalogItem">
+
+            <div class="CatalogIcon">
+                🕶️
+            </div>
+
+            <h3>
+                Cool Glasses
+            </h3>
+
+            <p>
+                Cool glasses for your avatar.
+            </p>
+
+            <button
+                onclick="buyItem('cool-glasses')">
+
+                Buy
+
+            </button>
+
+        </div>
+
+
+        <div class="CatalogItem">
+
+            <div class="CatalogIcon">
+                👟
+            </div>
+
+            <h3>
+                Classic Shoes
+            </h3>
+
+            <p>
+                Classic Rovival shoes.
+            </p>
+
+            <button
+                onclick="buyItem('classic-shoes')">
+
+                Buy
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ======================================
+     AVATAR PAGE
+======================================= -->
+
+<section
+    id="AvatarPage"
+    class="PageSection">
+
+    <h1>
+        Avatar
+    </h1>
+
+    <p>
+        Customize your Rovival character.
+    </p>
+
+
+    <div id="AvatarEditor">
+
+
+        <div id="AvatarPreview">
+
+            <div id="AvatarCharacter">
+
+                <div id="AvatarHead">
+                </div>
+
+                <div id="AvatarBody">
+                </div>
+
+                <div id="AvatarLeg1">
+                </div>
+
+                <div id="AvatarLeg2">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div id="AvatarControls">
+
+            <h3>
+                Choose a color
+            </h3>
+
+
+            <div class="ColorButtons">
+
+                <button
+                    class="ColorButton"
+                    style="background:#f4c28c"
+                    onclick="setAvatarColor('#f4c28c')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#ff0000"
+                    onclick="setAvatarColor('#ff0000')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#00aa00"
+                    onclick="setAvatarColor('#00aa00')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#0066ff"
+                    onclick="setAvatarColor('#0066ff')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#ffff00"
+                    onclick="setAvatarColor('#ffff00')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#ff69b4"
+                    onclick="setAvatarColor('#ff69b4')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#8000ff"
+                    onclick="setAvatarColor('#8000ff')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#ffffff"
+                    onclick="setAvatarColor('#ffffff')">
+                </button>
+
+                <button
+                    class="ColorButton"
+                    style="background:#000000"
+                    onclick="setAvatarColor('#000000')">
+                </button>
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                id="CopyColorButton"
+                onclick="enableColorPicker()">
+
+                Copy Color
+
+            </button>
+
+
+            <br>
+
+
+            <button
+                id="SaveAvatarButton"
+                onclick="saveAvatar()">
+
+                Save Avatar
+
+            </button>
+
+
+            <div
+                id="AvatarStatus"
+                style="margin-top:10px;">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================
+     ACCOUNT PAGE
+======================================= -->
+
+<section
+    id="AccountPage"
+    class="PageSection">
+
+    <h1>
+        Account
+    </h1>
+
+
+    <div id="AccountBox">
+
+        <div class="AccountRow">
+
+            <strong>
+                Username:
+            </strong>
+
+            <span id="AccountUsername">
+                Not logged in
+            </span>
+
+        </div>
+
+
+        <div class="AccountRow">
+
+            <strong>
+                Status:
+            </strong>
+
+            <span id="AccountStatus">
+                Not logged in
+            </span>
+
+        </div>
+
+
+        <div class="AccountRow">
+
+            <strong>
+                Platform:
+            </strong>
+
+            Rovival
+
+        </div>
+
+
+        <button
+            id="LogoutButton"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================
+     PREFEFOOTER
+======================================= -->
+
+<div id="PreFooter">
+
+    <br>
+    <br>
+
+    <ul>
+
+        <li>
+            <a
+                href="https://arovival.neocities.org">
+                Return to Rovival
+            </a>
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- ======================================
+     FOOTER
+======================================= -->
+
+<div id="Footer">
+
+    <strong>
+        Rovival
+    </strong>
+
+    <br>
+
+    Classic-inspired games,
+    building and virtual worlds.
+
+    <br>
+    <br>
+
+    © Rovival
+
+</div>
+
+
+</div>
+
+
+<!-- ======================================
+     LOGIN MODAL
+======================================= -->
+
+<div id="LoginModal">
+
+    <div class="ModalBox">
+
+        <h2>
+            Login to Rovival
+        </h2>
+
+
+        <input
+            id="LoginUsername"
+            type="text"
+            placeholder="Username"
+            autocomplete="username">
+
+
+        <input
+            id="LoginPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password">
+
+
+        <button
+            class="ModalPrimary"
+            onclick="login()">
+
+            Login
+
+        </button>
+
+
+        <button
+            class="ModalCancel"
+            onclick="closeModals()">
+
+            Cancel
+
+        </button>
+
+
+        <div
+            id="LoginStatus"
+            class="ModalStatus">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================
+     SIGNUP MODAL
+======================================= -->
+
+<div id="SignupModal">
+
+    <div class="ModalBox">
+
+        <h2>
+            Create a Rovival Account
+        </h2>
+
+
+        <input
+            id="SignupUsername"
+            type="text"
+            placeholder="Username"
+            autocomplete="username">
+
+
+        <input
+            id="SignupPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="new-password">
+
+
+        <button
+            class="ModalPrimary"
+            onclick="createAccount()">
+
+            Create Account
+
+        </button>
+
+
+        <button
+            class="ModalCancel"
+            onclick="closeModals()">
+
+            Cancel
+
+        </button>
+
+
+        <div
+            id="SignupStatus"
+            class="ModalStatus">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   ROVIVAL API
+========================================== */
+
+const API =
+    "https://server-0604.onrender.com";
+
+const TOKEN_KEY =
+    "rovival_token";
+
+
+let currentUser = null;
+
+
+/* ==========================================
+   API FUNCTION
+========================================== */
+
+async function api(
+    path,
+    options = {}
+) {
+
+    const token =
+        localStorage.getItem(
+            TOKEN_KEY
+        );
+
+
+    const headers = {
+        "Content-Type":
+            "application/json"
+    };
+
+
+    if (
+        options.headers &&
+        typeof options.headers === "object"
+    ) {
+
+        Object.assign(
+            headers,
+            options.headers
+        );
+
+    }
+
+
+    /*
+     * The token is sent with every
+     * authenticated request.
+     */
+
+    if (token) {
+
+        headers.Authorization =
+            "Bearer " + token;
+
+    }
+
+
+    let response;
+
+
+    try {
+
+        response = await fetch(
+            API + path,
+            {
+                ...options,
+
+                credentials:
+                    "include",
+
+                headers
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Rovival connection error:",
+            error
+        );
+
+
+        throw new Error(
+            "Load failed. Could not connect to the Rovival server."
+        );
+
+    }
+
+
+    let data = {};
+
+
+    try {
+
+        data =
+            await response.json();
+
+    } catch {
+
+        data = {};
+
+    }
+
+
+    if (!response.ok) {
+
+        if (
+            response.status === 401
+        ) {
+
+            localStorage.removeItem(
+                TOKEN_KEY
+            );
+
+        }
+
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            "Server request failed."
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* ==========================================
+   PAGE NAVIGATION
+========================================== */
+
+function showPage(page) {
+
+    document
+        .querySelectorAll(
+            ".PageSection"
+        )
+        .forEach(section => {
+
+            section.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    const pages = {
+
+        home:
+            "HomePage",
+
+        games:
+            "GamesPage",
+
+        catalog:
+            "CatalogPage",
+
+        avatar:
+            "AvatarPage",
+
+        account:
+            "AccountPage"
+
+    };
+
+
+    const target =
+        document.getElementById(
+            pages[page]
+        );
+
+
+    if (target) {
+
+        target.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if (page === "account") {
+
+        updateAccountPage();
+
+    }
+
+}
+
+
+/* ==========================================
+   MODALS
+========================================== */
+
+function openLogin() {
+
+    closeModals();
+
+    document.getElementById(
+        "LoginModal"
+    ).style.display = "flex";
+
+}
+
+
+function openSignup() {
+
+    closeModals();
+
+    document.getElementById(
+        "SignupModal"
+    ).style.display = "flex";
+
+}
+
+
+function closeModals() {
+
+    document.getElementById(
+        "LoginModal"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "SignupModal"
+    ).style.display = "none";
+
+}
+
+
+/* ==========================================
+   USER UI
+========================================== */
+
+function setCurrentUser(user) {
+
+    currentUser =
+        user || null;
+
+
+    const loggedUser =
+        document.getElementById(
+            "LoggedUser"
+        );
+
+
+    const login =
+        document.getElementById(
+            "HeaderLogin"
+        );
+
+
+    const signup =
+        document.getElementById(
+            "HeaderSignup"
+        );
+
+
+    if (currentUser) {
+
+        loggedUser.style.display =
+            "inline";
+
+
+        loggedUser.textContent =
+            "Logged in as " +
+            currentUser.username;
+
+
+        login.style.display =
+            "none";
+
+
+        signup.style.display =
+            "none";
+
+    } else {
+
+        loggedUser.style.display =
+            "none";
+
+
+        login.style.display =
+            "inline";
+
+
+        signup.style.display =
+            "inline";
+
+    }
+
+
+    updateAccountPage();
+
+}
+
+
+/* ==========================================
+   CREATE ACCOUNT
+========================================== */
+
+async function createAccount() {
+
+    const username =
+        document.getElementById(
+            "SignupUsername"
+        ).value.trim();
+
+
+    const password =
+        document.getElementById(
+            "SignupPassword"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "SignupStatus"
+        );
+
+
+    if (!username || !password) {
+
+        status.textContent =
+            "Enter a username and password.";
+
+        return;
+
+    }
+
+
+    if (username.length < 3) {
+
+        status.textContent =
+            "Username must be at least 3 characters.";
+
+        return;
+
+    }
+
+
+    if (password.length < 4) {
+
+        status.textContent =
+            "Password must be at least 4 characters.";
+
+        return;
+
+    }
+
+
+    status.textContent =
+        "Creating account...";
+
+
+    try {
+
+        const result =
+            await api(
+                "/api/signup",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                }
+            );
+
+
+        /*
+         * IMPORTANT:
+         * Store the Render authentication
+         * token returned by the server.
+         */
+
+        if (result.token) {
+
+            localStorage.setItem(
+                TOKEN_KEY,
+                result.token
+            );
+
+        }
+
+
+        setCurrentUser(
+            result.user || {
+                username
+            }
+        );
+
+
+        status.textContent =
+            "Account created successfully!";
+
+
+        document.getElementById(
+            "SignupPassword"
+        ).value = "";
+
+
+        setTimeout(
+            function() {
+
+                closeModals();
+
+                showPage(
+                    "account"
+                );
+
+            },
+            600
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        status.textContent =
+            error.message;
+
+    }
+
+}
+
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+async function login() {
+
+    const username =
+        document.getElementById(
+            "LoginUsername"
+        ).value.trim();
+
+
+    const password =
+        document.getElementById(
+            "LoginPassword"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "LoginStatus"
+        );
+
+
+    if (!username || !password) {
+
+        status.textContent =
+            "Enter a username and password.";
+
+        return;
+
+    }
+
+
+    status.textContent =
+        "Logging in...";
+
+
+    try {
+
+        const result =
+            await api(
+                "/api/login",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                }
+            );
+
+
+        if (result.token) {
+
+            localStorage.setItem(
+                TOKEN_KEY,
+                result.token
+            );
+
+        }
+
+
+        setCurrentUser(
+            result.user || {
+                username
+            }
+        );
+
+
+        status.textContent =
+            "Login successful!";
+
+
+        document.getElementById(
+            "LoginPassword"
+        ).value = "";
+
+
+        setTimeout(
+            function() {
+
+                closeModals();
+
+                showPage(
+                    "account"
+                );
+
+            },
+            500
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        status.textContent =
+            error.message;
+
+    }
+
+}
+
+
+/* ==========================================
+   CHECK LOGIN
+========================================== */
+
+async function checkLogin() {
+
+    const token =
+        localStorage.getItem(
+            TOKEN_KEY
+        );
+
+
+    if (!token) {
+
+        setCurrentUser(
+            null
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await api(
+                "/api/me"
+            );
+
+
+        if (result.user) {
+
+            setCurrentUser(
+                result.user
+            );
+
+        } else {
+
+            setCurrentUser(
+                result
+            );
+
+        }
+
+
+    } catch (error) {
+
+        localStorage.removeItem(
+            TOKEN_KEY
+        );
+
+
+        setCurrentUser(
+            null
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   LOGOUT
+========================================== */
+
+async function logout() {
+
+    try {
+
+        await api(
+            "/api/logout",
+            {
+                method: "POST"
+            }
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Logout:",
+            error.message
+        );
+
+    }
+
+
+    localStorage.removeItem(
+        TOKEN_KEY
+    );
+
+
+    setCurrentUser(
+        null
+    );
+
+
+    showPage(
+        "home"
+    );
+
+}
+
+
+/* ==========================================
+   ACCOUNT PAGE
+========================================== */
+
+function updateAccountPage() {
+
+    const username =
+        document.getElementById(
+            "AccountUsername"
+        );
+
+
+    const status =
+        document.getElementById(
+            "AccountStatus"
+        );
+
+
+    if (currentUser) {
+
+        username.textContent =
+            currentUser.username ||
+            "Unknown";
+
+
+        status.textContent =
+            "Logged in";
+
+    } else {
+
+        username.textContent =
+            "Not logged in";
+
+
+        status.textContent =
+            "Not logged in";
+
+    }
+
+}
+
+
+/* ==========================================
+   CATALOG
+========================================== */
+
+async function buyItem(
+    itemId
+) {
+
+    if (!currentUser) {
+
+        openLogin();
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await api(
+                "/api/buy",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        itemId
+                    })
+                }
+            );
+
+
+        alert(
+            result.message ||
+            "Item purchased!"
+        );
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   AVATAR
+========================================== */
+
+let selectedAvatarColor =
+    "#1688d8";
+
+
+function setAvatarColor(
+    color
+) {
+
+    selectedAvatarColor =
+        color;
+
+
+    document.getElementById(
+        "AvatarBody"
+    ).style.background =
+        color;
+
+
+    document.getElementById(
+        "AvatarStatus"
+    ).textContent =
+        "Color selected: " +
+        color;
+
+}
+
+
+function enableColorPicker() {
+
+    document.getElementById(
+        "AvatarStatus"
+    ).textContent =
+        "Choose one of the colors above to copy it to your avatar.";
+
+}
+
+
+async function saveAvatar() {
+
+    if (!currentUser) {
+
+        document.getElementById(
+            "AvatarStatus"
+        ).textContent =
+            "Please log in first.";
+
+        openLogin();
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await api(
+                "/api/avatar",
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+
+                        bodyColor:
+                            selectedAvatarColor
+
+                    })
+                }
+            );
+
+
+        document.getElementById(
+            "AvatarStatus"
+        ).textContent =
+            result.message ||
+            "Avatar saved!";
+
+
+    } catch (error) {
+
+        document.getElementById(
+            "AvatarStatus"
+        ).textContent =
+            error.message;
+
+    }
+
+}
+
+
+/* ==========================================
+   CLOSE MODAL BY CLICKING OUTSIDE
+========================================== */
+
+document.getElementById(
+    "LoginModal"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target === this
+        ) {
+
+            closeModals();
+
+        }
+
+    }
+);
+
+
+document.getElementById(
+    "SignupModal"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target === this
+        ) {
+
+            closeModals();
+
+        }
+
+    }
+);
+
+
+/* ==========================================
+   START
+========================================== */
+
+showPage(
+    "home"
+);
+
+
+checkLogin();
+
+
+/*
+ * Test the server when the page loads.
+ */
+
+api("/api/health")
+    .then(function(result) {
+
+        console.log(
+            "Rovival server online:",
+            result
+        );
+
+    })
+    .catch(function(error) {
+
+        console.log(
+            "Rovival server:",
+            error.message
+        );
+
+    });
+
+</script>
+
+</div>
+
+</body>
+
+</html>
