@@ -69,16 +69,12 @@ function loadJSON(file, fallback) {
     }
 }
 
-
 function saveJSON(file, data) {
-
     fs.writeFileSync(
         file,
         JSON.stringify(data, null, 2)
     );
-
 }
-
 
 // ============================================================
 // DATA
@@ -164,7 +160,6 @@ let games = loadJSON(
     ]
 );
 
-
 let catalog = loadJSON(
     CATALOG_FILE,
     [
@@ -213,18 +208,15 @@ let catalog = loadJSON(
     ]
 );
 
-
 let inventory = loadJSON(
     INVENTORY_FILE,
     {}
 );
 
-
 let avatars = loadJSON(
     AVATARS_FILE,
     {}
 );
-
 
 // ============================================================
 // SAVE INITIAL DATA
@@ -240,7 +232,6 @@ saveJSON(
     catalog
 );
 
-
 // ============================================================
 // STATISTICS
 // ============================================================
@@ -252,7 +243,6 @@ const stats = {
     accountsCreated: 0,
     logins: 0
 };
-
 
 // ============================================================
 // PASSWORD HASHING
@@ -276,9 +266,7 @@ function hashPassword(password) {
         salt,
         hash
     };
-
 }
-
 
 function verifyPassword(password, account) {
 
@@ -295,9 +283,7 @@ function verifyPassword(password, account) {
         Buffer.from(hash, "hex"),
         Buffer.from(account.passwordHash, "hex")
     );
-
 }
-
 
 // ============================================================
 // SESSION HELPERS
@@ -321,7 +307,6 @@ function createSession(username) {
     return token;
 }
 
-
 function deleteSession(token) {
 
     if (sessions[token]) {
@@ -332,11 +317,8 @@ function deleteSession(token) {
             SESSIONS_FILE,
             sessions
         );
-
     }
-
 }
-
 
 function parseCookies(req) {
 
@@ -372,12 +354,10 @@ function parseCookies(req) {
 
             cookies[key] =
                 decodeURIComponent(value);
-
         });
 
     return cookies;
 }
-
 
 function getUser(req) {
 
@@ -403,9 +383,7 @@ function getUser(req) {
             account.username ===
             session.username
     ) || null;
-
 }
-
 
 // ============================================================
 // COOKIE
@@ -427,9 +405,7 @@ function sessionCookie(token) {
 
         "Max-Age=2592000"
     ].join("; ");
-
 }
-
 
 // ============================================================
 // CLEAR COOKIE
@@ -450,9 +426,7 @@ function clearSessionCookie() {
 
         "Max-Age=0"
     ].join("; ");
-
 }
-
 
 // ============================================================
 // CORS
@@ -480,7 +454,6 @@ function setCORS(res, req) {
             "Access-Control-Allow-Origin",
             WEBSITE
         );
-
     }
 
     res.setHeader(
@@ -497,9 +470,7 @@ function setCORS(res, req) {
         "Access-Control-Allow-Methods",
         "GET,POST,OPTIONS"
     );
-
 }
-
 
 // ============================================================
 // RESPONSE HELPERS
@@ -534,9 +505,7 @@ function sendJSON(
     res.end(
         JSON.stringify(data)
     );
-
 }
-
 
 function sendText(
     res,
@@ -559,9 +528,7 @@ function sendText(
     );
 
     res.end(text);
-
 }
-
 
 // ============================================================
 // REQUEST BODY
@@ -592,12 +559,9 @@ function readBody(req) {
                         );
 
                         req.destroy();
-
                     }
-
                 }
             );
-
 
             req.on(
                 "end",
@@ -608,7 +572,6 @@ function readBody(req) {
                         resolve({});
 
                         return;
-
                     }
 
                     try {
@@ -624,23 +587,17 @@ function readBody(req) {
                                 "Invalid JSON."
                             )
                         );
-
                     }
-
                 }
             );
-
 
             req.on(
                 "error",
                 reject
             );
-
         }
     );
-
 }
-
 
 // ============================================================
 // USERNAME VALIDATION
@@ -652,9 +609,7 @@ function validUsername(username) {
         typeof username === "string" &&
         /^[A-Za-z0-9_]{3,20}$/.test(username)
     );
-
 }
-
 
 // ============================================================
 // PASSWORD VALIDATION
@@ -667,9 +622,7 @@ function validPassword(password) {
         password.length >= 4 &&
         password.length <= 100
     );
-
 }
-
 
 // ============================================================
 // ROUTER
@@ -686,7 +639,6 @@ const server =
                 req
             );
 
-
             // ------------------------------------------------
             // OPTIONS
             // ------------------------------------------------
@@ -702,20 +654,16 @@ const server =
                 return;
             }
 
-
             const requestURL =
                 new URL(
                     req.url,
                     `http://${req.headers.host || "localhost"}`
                 );
 
-
             const pathname =
                 requestURL.pathname;
 
-
             try {
-
 
                 // ============================================
                 // ROOT
@@ -743,13 +691,16 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // HEALTH
+                // Supports both /health and /api/health
                 // ============================================
 
                 if (
-                    pathname === "/health" &&
+                    (
+                        pathname === "/health" ||
+                        pathname === "/api/health"
+                    ) &&
                     req.method === "GET"
                 ) {
 
@@ -759,6 +710,7 @@ const server =
                         200,
                         {
                             status: "ok",
+                            success: true,
                             name: "Rovival",
                             uptime:
                                 process.uptime(),
@@ -771,7 +723,6 @@ const server =
 
                     return;
                 }
-
 
                 // ============================================
                 // STATS
@@ -813,7 +764,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // SIGNUP
                 // ============================================
@@ -826,18 +776,15 @@ const server =
                     const body =
                         await readBody(req);
 
-
                     const username =
                         String(
                             body.username || ""
                         ).trim();
 
-
                     const password =
                         String(
                             body.password || ""
                         );
-
 
                     if (
                         !validUsername(
@@ -860,7 +807,6 @@ const server =
                         return;
                     }
 
-
                     if (
                         !validPassword(
                             password
@@ -882,7 +828,6 @@ const server =
                         return;
                     }
 
-
                     const exists =
                         accounts.some(
                             account =>
@@ -890,7 +835,6 @@ const server =
                                     .toLowerCase() ===
                                 username.toLowerCase()
                         );
-
 
                     if (exists) {
 
@@ -909,12 +853,10 @@ const server =
                         return;
                     }
 
-
                     const passwordData =
                         hashPassword(
                             password
                         );
-
 
                     const account = {
                         id:
@@ -933,11 +875,9 @@ const server =
                             new Date().toISOString()
                     };
 
-
                     accounts.push(
                         account
                     );
-
 
                     inventory[username] = [];
 
@@ -955,7 +895,6 @@ const server =
                             false
                     };
 
-
                     saveJSON(
                         ACCOUNTS_FILE,
                         accounts
@@ -971,10 +910,14 @@ const server =
                         avatars
                     );
 
+                    // Automatically log the new account in
+                    const token =
+                        createSession(
+                            username
+                        );
 
                     stats.accountsCreated++;
                     stats.successful++;
-
 
                     sendJSON(
                         res,
@@ -986,13 +929,29 @@ const server =
                             message:
                                 "Rovival account created.",
 
-                            username
+                            username,
+
+                            user: {
+                                id:
+                                    account.id,
+
+                                username:
+                                    account.username,
+
+                                created:
+                                    account.created
+                            }
+                        },
+                        {
+                            "Set-Cookie":
+                                sessionCookie(
+                                    token
+                                )
                         }
                     );
 
                     return;
                 }
-
 
                 // ============================================
                 // LOGIN
@@ -1006,18 +965,15 @@ const server =
                     const body =
                         await readBody(req);
 
-
                     const username =
                         String(
                             body.username || ""
                         ).trim();
 
-
                     const password =
                         String(
                             body.password || ""
                         );
-
 
                     const account =
                         accounts.find(
@@ -1026,7 +982,6 @@ const server =
                                     .toLowerCase() ===
                                 username.toLowerCase()
                         );
-
 
                     if (
                         !account ||
@@ -1051,16 +1006,13 @@ const server =
                         return;
                     }
 
-
                     const token =
                         createSession(
                             account.username
                         );
 
-
                     stats.logins++;
                     stats.successful++;
-
 
                     sendJSON(
                         res,
@@ -1091,7 +1043,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // LOGOUT
                 // ============================================
@@ -1104,7 +1055,6 @@ const server =
                     const cookies =
                         parseCookies(req);
 
-
                     if (
                         cookies.rovival_session
                     ) {
@@ -1112,12 +1062,9 @@ const server =
                         deleteSession(
                             cookies.rovival_session
                         );
-
                     }
 
-
                     stats.successful++;
-
 
                     sendJSON(
                         res,
@@ -1135,7 +1082,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // CURRENT USER
                 // ============================================
@@ -1147,7 +1093,6 @@ const server =
 
                     const user =
                         getUser(req);
-
 
                     if (!user) {
 
@@ -1163,7 +1108,6 @@ const server =
 
                         return;
                     }
-
 
                     sendJSON(
                         res,
@@ -1186,7 +1130,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // GAMES
                 // ============================================
@@ -1208,7 +1151,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // SINGLE GAME
                 // ============================================
@@ -1227,13 +1169,11 @@ const server =
                                 .pop()
                         );
 
-
                     const game =
                         games.find(
                             item =>
                                 item.id === id
                         );
-
 
                     if (!game) {
 
@@ -1250,7 +1190,6 @@ const server =
                         return;
                     }
 
-
                     sendJSON(
                         res,
                         req,
@@ -1262,7 +1201,6 @@ const server =
 
                     return;
                 }
-
 
                 // ============================================
                 // CREATE GAME
@@ -1276,7 +1214,6 @@ const server =
 
                     const user =
                         getUser(req);
-
 
                     if (!user) {
 
@@ -1293,16 +1230,13 @@ const server =
                         return;
                     }
 
-
                     const body =
                         await readBody(req);
-
 
                     const name =
                         String(
                             body.name || ""
                         ).trim();
-
 
                     if (
                         name.length < 3 ||
@@ -1321,7 +1255,6 @@ const server =
 
                         return;
                     }
-
 
                     const game = {
 
@@ -1354,17 +1287,14 @@ const server =
                             new Date().toISOString()
                     };
 
-
                     games.push(
                         game
                     );
-
 
                     saveJSON(
                         GAMES_FILE,
                         games
                     );
-
 
                     sendJSON(
                         res,
@@ -1378,7 +1308,6 @@ const server =
 
                     return;
                 }
-
 
                 // ============================================
                 // CATALOG
@@ -1401,7 +1330,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // INVENTORY
                 // ============================================
@@ -1413,7 +1341,6 @@ const server =
 
                     const user =
                         getUser(req);
-
 
                     if (!user) {
 
@@ -1429,7 +1356,6 @@ const server =
 
                         return;
                     }
-
 
                     sendJSON(
                         res,
@@ -1446,7 +1372,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // BUY ITEM
                 // ============================================
@@ -1458,7 +1383,6 @@ const server =
 
                     const user =
                         getUser(req);
-
 
                     if (!user) {
 
@@ -1475,10 +1399,8 @@ const server =
                         return;
                     }
 
-
                     const body =
                         await readBody(req);
-
 
                     const item =
                         catalog.find(
@@ -1486,7 +1408,6 @@ const server =
                                 product.id ===
                                 Number(body.itemId)
                         );
-
 
                     if (!item) {
 
@@ -1503,7 +1424,6 @@ const server =
                         return;
                     }
 
-
                     if (
                         !inventory[
                             user.username
@@ -1513,9 +1433,7 @@ const server =
                         inventory[
                             user.username
                         ] = [];
-
                     }
-
 
                     const alreadyOwned =
                         inventory[
@@ -1524,7 +1442,6 @@ const server =
                             id =>
                                 id === item.id
                         );
-
 
                     if (!alreadyOwned) {
 
@@ -1538,9 +1455,7 @@ const server =
                             INVENTORY_FILE,
                             inventory
                         );
-
                     }
-
 
                     sendJSON(
                         res,
@@ -1559,7 +1474,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // AVATAR GET
                 // ============================================
@@ -1571,7 +1485,6 @@ const server =
 
                     const user =
                         getUser(req);
-
 
                     if (!user) {
 
@@ -1587,7 +1500,6 @@ const server =
 
                         return;
                     }
-
 
                     if (
                         !avatars[
@@ -1611,8 +1523,11 @@ const server =
                                 false
                         };
 
+                        saveJSON(
+                            AVATARS_FILE,
+                            avatars
+                        );
                     }
-
 
                     sendJSON(
                         res,
@@ -1629,7 +1544,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // AVATAR SAVE
                 // ============================================
@@ -1641,7 +1555,6 @@ const server =
 
                     const user =
                         getUser(req);
-
 
                     if (!user) {
 
@@ -1658,16 +1571,13 @@ const server =
                         return;
                     }
 
-
                     const body =
                         await readBody(req);
-
 
                     const current =
                         avatars[
                             user.username
                         ] || {};
-
 
                     avatars[
                         user.username
@@ -1694,12 +1604,10 @@ const server =
                             )
                     };
 
-
                     saveJSON(
                         AVATARS_FILE,
                         avatars
                     );
-
 
                     sendJSON(
                         res,
@@ -1717,7 +1625,6 @@ const server =
 
                     return;
                 }
-
 
                 // ============================================
                 // PLAYERS
@@ -1740,7 +1647,6 @@ const server =
                     return;
                 }
 
-
                 // ============================================
                 // 404
                 // ============================================
@@ -1752,11 +1658,11 @@ const server =
                     req,
                     404,
                     {
+                        success: false,
                         error:
                             "Rovival API endpoint not found."
                     }
                 );
-
 
             } catch (error) {
 
@@ -1765,25 +1671,21 @@ const server =
                     error
                 );
 
-
                 stats.failed++;
-
 
                 sendJSON(
                     res,
                     req,
                     500,
                     {
+                        success: false,
                         error:
                             "Internal server error."
                     }
                 );
-
             }
-
         }
     );
-
 
 // ============================================================
 // ERROR HANDLING
@@ -1797,10 +1699,8 @@ server.on(
             "Server error:",
             error
         );
-
     }
 );
-
 
 // ============================================================
 // START SERVER
@@ -1863,10 +1763,8 @@ server.listen(
         console.log(
             "========================================"
         );
-
     }
 );
-
 
 // ============================================================
 // GRACEFUL SHUTDOWN
@@ -1877,7 +1775,6 @@ function shutdown() {
     console.log(
         "Shutting down Rovival server..."
     );
-
 
     saveJSON(
         ACCOUNTS_FILE,
@@ -1909,7 +1806,6 @@ function shutdown() {
         avatars
     );
 
-
     server.close(
         () => {
 
@@ -1918,12 +1814,9 @@ function shutdown() {
             );
 
             process.exit(0);
-
         }
     );
-
 }
-
 
 process.on(
     "SIGTERM",
